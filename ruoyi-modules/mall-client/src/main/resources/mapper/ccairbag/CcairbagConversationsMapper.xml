@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagConversationsMapper">
+    
+    <resultMap type="CcairbagConversations" id="CcairbagConversationsResult">
+        <result property="conversationId"    column="conversation_id"    />
+        <result property="buyerId"    column="buyer_id"    />
+        <result property="sellerId"    column="seller_id"    />
+        <result property="detailId"    column="detail_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <resultMap id="conversationWithMessagesResultMap" type="CcairbagConversations">
+        <id property="conversationId" column="conversation_id"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="detailId" column="detail_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="userName" column="userName"/>
+        <result property="headimgurl" column="headimgurl"/>
+
+        <result property="unreadCount" column="unreadCount"/>
+
+        <result property="deleted" column="deleted"/>
+
+        <!-- Collection of messages (one-to-many) -->
+        <collection property="messages" ofType="com.ruoyi.system.api.domain.ccairbag.CcairbagMessages">
+            <id property="messageId" column="message_id"/>
+            <result property="conversationsId" column="conversations_id"/>
+            <result property="senderId" column="sender_id"/>
+            <result property="messageContent" column="message_content"/>
+
+            <result property="isReadBuyer" column="is_read_buyer"/>
+            <result property="isReadSeller" column="is_read_seller"/>
+            <result property="messageType" column="message_type"/>
+
+            <result property="createBy" column="msg_create_by"/>
+            <result property="createTime" column="msg_create_time"/>
+            <result property="updateBy" column="msg_update_by"/>
+            <result property="updateTime" column="msg_update_time"/>
+            <result property="userName" column="msg_user_name"/>
+            <result property="headimgurl" column="msg_headimgurl"/>
+            <result property="senderType" column="msg_sender_type"/>
+            <result property="groupDate" column="msg_group_date"/>  <!-- 新增分组字段映射 -->
+            <result property="deleted" column="msg_deleted"/>
+        </collection>
+    </resultMap>
+
+    <sql id="selectCcairbagConversationsVo">
+        select conversation_id, buyer_id, seller_id, detail_id, create_by, create_time, update_by, update_time, deleted from ccairbag_conversations
+    </sql>
+
+    <select id="selectConversationsList" parameterType="CcairbagConversations" resultMap="CcairbagConversationsResult">
+        <include refid="selectCcairbagConversationsVo"/>
+        <where>
+            deleted = 0
+            <if test="sellerId != null "> and seller_id = #{sellerId}</if>
+            <if test="buyerId != null  "> and buyer_id  = #{buyerId}</if>
+            <if test="detailId != null "> and detail_id = #{detailId}</if>
+
+        </where>
+    </select>
+
+    <!-- 查询用户的未读消息数量 -->
+    <select id="getUserUnreadMessageCountExt" resultType="java.util.Map">
+        SELECT
+            u.user_id,
+            u.user_type,
+            COALESCE(SUM(m.unread_count), 0) AS unread_count,
+            u.link
+        FROM (
+                 SELECT
+                     #{userId} AS user_id,
+                     'buyer' AS user_type,
+                     'https://buyer.example.com' AS link
+                 UNION ALL
+                 SELECT
+                     #{userId} AS user_id,
+                     'seller' AS user_type,
+                     'https://seller.example.com' AS link
+                 UNION ALL
+                 SELECT
+                     #{userId} AS user_id,
+                     'order' AS user_type,
+                     'https://order.example.com' AS link
+             ) u
+                 LEFT JOIN (
+            SELECT
+                c.buyer_id AS user_id,
+                'buyer' AS user_type,
+                COUNT(m.message_id) AS unread_count
+            FROM ccairbag_conversations c
+                     LEFT JOIN ccairbag_messages m ON c.conversation_id = m.conversations_id
+            WHERE
+                c.buyer_id = #{userId}
+              AND m.is_read_buyer = 0
+              AND c.deleted = 0
+              AND m.deleted = 0
+            GROUP BY c.buyer_id
+
+            UNION ALL
+
+            SELECT
+                c.seller_id AS user_id,
+                'seller' AS user_type,
+                COUNT(m.message_id) AS unread_count
+            FROM ccairbag_conversations c
+                     LEFT JOIN ccairbag_messages m ON c.conversation_id = m.conversations_id
+            WHERE
+                c.seller_id = #{userId}
+              AND m.is_read_seller = 0
+              AND c.deleted = 0
+              AND m.deleted = 0
+            GROUP BY c.seller_id
+
+            UNION ALL
+
+            SELECT
+                o.shop_user_id,
+                'order' AS user_type,
+                COUNT(o.order_id) AS unread_count
+            FROM ccairbag_orders o
+            WHERE
+                o.order_status = 0
+              AND o.shop_user_id = #{userId}
+            GROUP BY o.user_id
+        ) m ON u.user_id = m.user_id AND u.user_type = m.user_type
+        GROUP BY u.user_id, u.user_type, u.link
+    </select>
+
+    <!-- 查询用户的未读消息数量 -->
+    <select id="getUserUnreadMessageCount" resultType="java.util.Map">
+        SELECT
+            u.user_id,
+            u.user_type,
+            COALESCE(SUM(m.unread_count), 0) AS unread_count,
+            u.link
+        FROM (
+                 SELECT
+                     #{userId} AS user_id,
+                     'buyer' AS user_type,
+                     'https://buyer.example.com' AS link
+                 UNION ALL
+                 SELECT
+                     #{userId} AS user_id,
+                     'seller' AS user_type,
+                     'https://seller.example.com' AS link
+
+             ) u
+                 LEFT JOIN (
+            SELECT
+                c.buyer_id AS user_id,
+                'buyer' AS user_type,
+                COUNT(m.message_id) AS unread_count
+            FROM ccairbag_conversations c
+                     LEFT JOIN ccairbag_messages m ON c.conversation_id = m.conversations_id
+            WHERE
+                c.buyer_id = #{userId}
+              AND m.is_read_buyer = 0
+              AND c.deleted = 0
+              AND m.deleted = 0
+            GROUP BY c.buyer_id
+
+            UNION ALL
+
+            SELECT
+                c.seller_id AS user_id,
+                'seller' AS user_type,
+                COUNT(m.message_id) AS unread_count
+            FROM ccairbag_conversations c
+                     LEFT JOIN ccairbag_messages m ON c.conversation_id = m.conversations_id
+            WHERE
+                c.seller_id = #{userId}
+              AND m.is_read_seller = 0
+              AND c.deleted = 0
+              AND m.deleted = 0
+            GROUP BY c.seller_id
+
+
+        ) m ON u.user_id = m.user_id AND u.user_type = m.user_type
+        GROUP BY u.user_id, u.user_type, u.link
+    </select>
+
+
+    <select id="selectBuyerConversationsList" parameterType="CcairbagConversations" resultMap="conversationWithMessagesResultMap">
+        SELECT
+        c.*,
+        COALESCE(mx.unread_count, 0) AS unreadCount, -- 使用 COALESCE 函数处理 NULL 值
+        s.shop_name userName,
+        s.shop_logo headimgurl,
+        m.message_id,
+        m.conversations_id,
+        m.sender_id,
+        m.message_content,
+        m.is_read_buyer,
+        m.is_read_seller,
+        m.message_type,
+        DATE_FORMAT(m.create_time, '%Y-%m-%d') AS msg_group_date,  <!-- 新增分组字段 -->
+        m.create_by AS msg_create_by,
+        m.create_time AS msg_create_time,
+        m.update_by AS msg_update_by,
+        m.update_time AS msg_update_time,
+        m.user_name AS msg_user_name,
+        m.headimgurl AS msg_headimgurl,
+        m.sender_type AS msg_sender_type,
+        m.deleted AS msg_deleted
+        FROM ccairbag_conversations c
+        LEFT JOIN  (
+            SELECT *
+            FROM ccairbag_messages
+            ORDER BY create_time ASC
+        ) m ON c.conversation_id = m.conversations_id
+        LEFT JOIN (
+            -- 子查询计算每个对话的未读消息数量
+            SELECT
+            conversations_id,
+            COUNT(1) AS unread_count
+            FROM
+            ccairbag_messages
+            WHERE
+            is_read_buyer = 0
+            GROUP BY
+            conversations_id
+        ) mx ON c.conversation_id = mx.conversations_id
+
+        left join ccairbag_shops s on c.seller_id = s.user_id
+        WHERE c.deleted = 0 and   c.buyer_id = #{buyerId}
+        ORDER BY
+
+        <choose>
+            <when test="sellerId != null ">  c.seller_id desc</when>
+            <otherwise>
+                c.update_time desc
+            </otherwise>
+
+        </choose>
+
+
+
+    </select>
+
+    <select id="selectBuyerConversationsListExt" parameterType="CcairbagConversations" resultMap="conversationWithMessagesResultMap">
+        SELECT
+        c.*,
+        COALESCE(mx.unread_count, 0) AS unreadCount, -- 使用 COALESCE 函数处理 NULL 值
+        s.shop_name userName,
+        s.shop_logo headimgurl
+        FROM ccairbag_conversations c
+        LEFT JOIN (
+        -- 子查询计算每个对话的未读消息数量
+        SELECT
+        conversations_id,
+        COUNT(1) AS unread_count
+        FROM
+        ccairbag_messages
+        WHERE
+        is_read_buyer = 0
+        GROUP BY
+        conversations_id
+        ) mx ON c.conversation_id = mx.conversations_id
+
+        left join ccairbag_shops s on c.seller_id = s.user_id
+        WHERE c.deleted = 0 and   c.buyer_id = #{buyerId}
+        ORDER BY
+
+        <choose>
+            <when test="sellerId != null ">  c.seller_id desc</when>
+            <otherwise>
+                c.update_time desc
+            </otherwise>
+
+        </choose>
+
+
+
+    </select>
+
+
+    <select id="selectSellerConversationsList" parameterType="CcairbagConversations" resultMap="conversationWithMessagesResultMap">
+        SELECT
+        c.*,
+        COALESCE(mx.unread_count, 0) AS unreadCount, -- 使用 COALESCE 函数处理 NULL 值
+        s.user_name userName,
+        s.headimgurl headimgurl,
+        m.message_id,
+        m.conversations_id,
+        m.sender_id,
+        m.message_content,
+        m.is_read_buyer,
+        m.is_read_seller,
+        m.message_type,
+        DATE_FORMAT(m.create_time, '%Y-%m-%d') AS msg_group_date,  <!-- 新增分组字段 -->
+        m.create_by AS msg_create_by,
+        m.create_time AS msg_create_time,
+        m.update_by AS msg_update_by,
+        m.update_time AS msg_update_time,
+        m.user_name AS msg_user_name,
+        m.headimgurl AS msg_headimgurl,
+        m.sender_type AS msg_sender_type,
+        m.deleted AS msg_deleted
+        FROM ccairbag_conversations c
+        LEFT JOIN (
+            SELECT *
+            FROM ccairbag_messages
+            ORDER BY create_time ASC
+        ) m ON c.conversation_id = m.conversations_id
+        LEFT JOIN (
+            -- 子查询计算每个对话的未读消息数量
+            SELECT
+            conversations_id,
+            COUNT(1) AS unread_count
+            FROM
+            ccairbag_messages
+            WHERE
+            is_read_seller = 0
+            GROUP BY
+            conversations_id
+        ) mx ON c.conversation_id = mx.conversations_id
+        left join ccairbag_users s on c.buyer_id = s.user_id
+
+        WHERE c.deleted = 0 and  c.seller_id= #{sellerId}
+        ORDER BY
+
+        <choose>
+            <when test="buyerId != null ">  c.buyer_id desc</when>
+            <otherwise>
+                c.update_time desc
+            </otherwise>
+
+        </choose>
+
+
+
+    </select>
+
+
+    <select id="selectSellerConversationsListExt" parameterType="CcairbagConversations" resultMap="conversationWithMessagesResultMap">
+        SELECT
+        c.*,
+        COALESCE(mx.unread_count, 0) AS unreadCount, -- 使用 COALESCE 函数处理 NULL 值
+        s.user_name userName,
+        s.headimgurl headimgurl
+        FROM ccairbag_conversations c
+
+        LEFT JOIN (
+        -- 子查询计算每个对话的未读消息数量
+        SELECT
+        conversations_id,
+        COUNT(1) AS unread_count
+        FROM
+        ccairbag_messages
+        WHERE
+        is_read_seller = 0
+        GROUP BY
+        conversations_id
+        ) mx ON c.conversation_id = mx.conversations_id
+        left join ccairbag_users s on c.buyer_id = s.user_id
+
+        WHERE c.deleted = 0 and  c.seller_id= #{sellerId}
+        ORDER BY
+
+        <choose>
+            <when test="buyerId != null ">  c.buyer_id desc</when>
+            <otherwise>
+                c.update_time desc
+            </otherwise>
+
+        </choose>
+
+
+
+    </select>
+    
+    <select id="selectCcairbagConversationsByConversationId" parameterType="Long" resultMap="CcairbagConversationsResult">
+        <include refid="selectCcairbagConversationsVo"/>
+        where deleted = 0 and conversation_id = #{conversationId}
+    </select>
+
+    <select id="selectConversation" parameterType="Long" resultMap="CcairbagConversationsResult">
+        <include refid="selectCcairbagConversationsVo"/>
+        where deleted = 0
+        and buyer_id = #{buyerId}
+        and seller_id = #{sellerId}
+        limit 1
+    </select>
+
+
+    <insert id="insertCcairbagConversations" parameterType="CcairbagConversations" useGeneratedKeys="true" keyProperty="conversationId">
+        insert into ccairbag_conversations
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="buyerId != null">buyer_id,</if>
+            <if test="sellerId != null">seller_id,</if>
+            <if test="detailId != null">detail_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="buyerId != null">#{buyerId},</if>
+            <if test="sellerId != null">#{sellerId},</if>
+            <if test="detailId != null">#{detailId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagConversations" parameterType="CcairbagConversations">
+        update ccairbag_conversations
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="buyerId != null">buyer_id = #{buyerId},</if>
+            <if test="sellerId != null">seller_id = #{sellerId},</if>
+            <if test="detailId != null">detail_id = #{detailId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where conversation_id = #{conversationId}
+    </update>
+
+    <delete id="deleteCcairbagConversationsByConversationId" parameterType="Long">
+        update ccairbag_conversations set deleted = 1
+        where conversation_id = #{conversationId}
+    </delete>
+
+    <delete id="deleteCcairbagConversationsByConversationIds" parameterType="String">
+        update ccairbag_conversations set deleted = 1 where conversation_id in
+        <foreach item="conversationId" collection="array" open="(" separator="," close=")">
+            #{conversationId}
+        </foreach>
+
+    </delete>
+</mapper>

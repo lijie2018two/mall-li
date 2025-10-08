@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagCarBrandsMapper">
+    
+    <resultMap type="CcairbagCarBrands" id="CcairbagCarBrandsResult">
+        <result property="id"    column="id"    />
+        <result property="make"    column="make"    />
+        <result property="model"    column="model"    />
+        <result property="year"    column="year"    />
+    </resultMap>
+
+    <sql id="selectCcairbagCarBrandsVo">
+        select id, make, model, year from ccairbag_car_brands
+    </sql>
+
+
+    
+    <select id="selectCcairbagCarBrandsById" parameterType="String" resultMap="CcairbagCarBrandsResult">
+        <include refid="selectCcairbagCarBrandsVo"/>
+        where deleted = 0 and id = #{id}
+    </select>
+
+    <select id="getMakeList" parameterType="String" resultMap="CcairbagCarBrandsResult">
+        select make from ccairbag_car_brands GROUP BY make ORDER BY make
+    </select>
+
+
+    <select id="getModelListByMake" parameterType="String" resultMap="CcairbagCarBrandsResult">
+        select model from ccairbag_car_brands
+        where make=#{make}
+        GROUP BY model
+        ORDER BY model
+
+    </select>
+
+    <select id="getYearListByModel" parameterType="String" resultMap="CcairbagCarBrandsResult">
+        select year from ccairbag_car_brands
+        where model=#{model}
+        GROUP BY year
+        ORDER BY year
+    </select>
+
+
+
+
+</mapper>

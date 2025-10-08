@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagNotificationUserMapper">
+    
+    <resultMap type="CcairbagNotificationUser" id="CcairbagNotificationUserResult">
+        <result property="id"    column="id"    />
+        <result property="notificationId"    column="notification_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="readStatus"    column="read_status"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagNotificationUserVo">
+        select id, notification_id, user_id, read_status, deleted from ccairbag_notification_user
+    </sql>
+
+    <select id="selectCcairbagNotificationUserList" parameterType="CcairbagNotificationUser" resultMap="CcairbagNotificationUserResult">
+        <include refid="selectCcairbagNotificationUserVo"/>
+        <where>
+            deleted = 0
+            <if test="notificationId != null "> and notification_id = #{notificationId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="readStatus != null "> and read_status = #{readStatus}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagNotificationUserById" parameterType="Long" resultMap="CcairbagNotificationUserResult">
+        <include refid="selectCcairbagNotificationUserVo"/>
+        where deleted = 0 and id = #{id}
+    </select>
+
+    <insert id="insertCcairbagNotificationUser" parameterType="CcairbagNotificationUser" useGeneratedKeys="true" keyProperty="id">
+        insert into ccairbag_notification_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="notificationId != null">notification_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="notificationId != null">#{notificationId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagNotificationUser" parameterType="CcairbagNotificationUser">
+        update ccairbag_notification_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="notificationId != null">notification_id = #{notificationId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCcairbagNotificationUserById" parameterType="Long">
+        update ccairbag_notification_user set deleted = 1 where id = #{id}
+    </delete>
+
+    <delete id="deleteCcairbagNotificationUserByIds" parameterType="String">
+        update ccairbag_notification_user set deleted = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </delete>
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagProductLogisticsMapper">
+    
+    <resultMap type="CcairbagProductLogistics" id="CcairbagProductLogisticsResult">
+        <result property="id"    column="id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="serviceId"    column="service_id"    />
+        <result property="shippingFeeCalculation"    column="shipping_fee_calculation"    />
+        <result property="estimatedDeliveryDays"    column="estimated_delivery_days"    />
+        <result property="shippingTypeRules"    column="shipping_type_rules"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagProductLogisticsVo">
+        select id, product_id, service_id, shipping_fee_calculation, estimated_delivery_days, shipping_type_rules, create_by, create_time, update_by, update_time, deleted from ccairbag_product_logistics
+    </sql>
+
+    <select id="selectCcairbagProductLogisticsList" parameterType="CcairbagProductLogistics" resultMap="CcairbagProductLogisticsResult">
+        <include refid="selectCcairbagProductLogisticsVo"/>
+        <where>
+            deleted = 0
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="serviceId != null "> and service_id = #{serviceId}</if>
+            <if test="shippingFeeCalculation != null  and shippingFeeCalculation != ''"> and shipping_fee_calculation = #{shippingFeeCalculation}</if>
+            <if test="estimatedDeliveryDays != null "> and estimated_delivery_days = #{estimatedDeliveryDays}</if>
+            <if test="shippingTypeRules != null  and shippingTypeRules != ''"> and shipping_type_rules = #{shippingTypeRules}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagProductLogisticsById" parameterType="Long" resultMap="CcairbagProductLogisticsResult">
+        <include refid="selectCcairbagProductLogisticsVo"/>
+        where deleted = 0 and id = #{id}
+    </select>
+
+    <insert id="insertCcairbagProductLogistics" parameterType="CcairbagProductLogistics" useGeneratedKeys="true" keyProperty="id">
+        insert into ccairbag_product_logistics
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="serviceId != null">service_id,</if>
+            <if test="shippingFeeCalculation != null">shipping_fee_calculation,</if>
+            <if test="estimatedDeliveryDays != null">estimated_delivery_days,</if>
+            <if test="shippingTypeRules != null">shipping_type_rules,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="serviceId != null">#{serviceId},</if>
+            <if test="shippingFeeCalculation != null">#{shippingFeeCalculation},</if>
+            <if test="estimatedDeliveryDays != null">#{estimatedDeliveryDays},</if>
+            <if test="shippingTypeRules != null">#{shippingTypeRules},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagProductLogistics" parameterType="CcairbagProductLogistics">
+        update ccairbag_product_logistics
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="serviceId != null">service_id = #{serviceId},</if>
+            <if test="shippingFeeCalculation != null">shipping_fee_calculation = #{shippingFeeCalculation},</if>
+            <if test="estimatedDeliveryDays != null">estimated_delivery_days = #{estimatedDeliveryDays},</if>
+            <if test="shippingTypeRules != null">shipping_type_rules = #{shippingTypeRules},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCcairbagProductLogisticsById" parameterType="Long">
+        update ccairbag_product_logistics set deleted = 1 where id = #{id}
+    </delete>
+
+    <delete id="deleteCcairbagProductLogisticsByIds" parameterType="String">
+        update ccairbag_product_logistics set deleted = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </delete>
+</mapper>

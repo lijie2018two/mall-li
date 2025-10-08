@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagProductTagReferenceMapper">
+    
+    <resultMap type="CcairbagProductTagReference" id="CcairbagProductTagReferenceResult">
+        <result property="referenceId"    column="reference_id"    />
+        <result property="revision"    column="revision"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="tagId"    column="tag_id"    />
+        <result property="deleted"    column="deleted"    />
+        <result property="prodId"    column="prod_id"    />
+        <result property="createdBy"    column="created_by"    />
+        <result property="createdTime"    column="created_time"    />
+        <result property="updatedBy"    column="updated_by"    />
+        <result property="updatedTime"    column="updated_time"    />
+    </resultMap>
+
+    <sql id="selectCcairbagProductTagReferenceVo">
+        select reference_id, revision, shop_id, tag_id, deleted, prod_id, created_by, created_time, updated_by, updated_time from ccairbag_product_tag_reference
+    </sql>
+
+    <select id="selectCcairbagProductTagReferenceList" parameterType="CcairbagProductTagReference" resultMap="CcairbagProductTagReferenceResult">
+        <include refid="selectCcairbagProductTagReferenceVo"/>
+        <where>
+            deleted = 0
+            <if test="referenceId != null  and referenceId != ''"> and reference_id = #{referenceId}</if>
+            <if test="revision != null "> and revision = #{revision}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="tagId != null "> and tag_id = #{tagId}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+            <if test="prodId != null "> and prod_id = #{prodId}</if>
+            <if test="createdBy != null  and createdBy != ''"> and created_by = #{createdBy}</if>
+            <if test="createdTime != null "> and created_time = #{createdTime}</if>
+            <if test="updatedBy != null  and updatedBy != ''"> and updated_by = #{updatedBy}</if>
+            <if test="updatedTime != null "> and updated_time = #{updatedTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagProductTagReferenceByReferenceId" parameterType="String" resultMap="CcairbagProductTagReferenceResult">
+        <include refid="selectCcairbagProductTagReferenceVo"/>
+        where deleted = 0 and reference_id = #{referenceId}
+    </select>
+
+    <insert id="insertCcairbagProductTagReference" parameterType="CcairbagProductTagReference">
+        insert into ccairbag_product_tag_reference
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="referenceId != null">reference_id,</if>
+            <if test="revision != null">revision,</if>
+            <if test="shopId != null">shop_id,</if>
+            <if test="tagId != null">tag_id,</if>
+            <if test="deleted != null">deleted,</if>
+            <if test="prodId != null">prod_id,</if>
+            <if test="createdBy != null">created_by,</if>
+            <if test="createdTime != null">created_time,</if>
+            <if test="updatedBy != null">updated_by,</if>
+            <if test="updatedTime != null">updated_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="referenceId != null">#{referenceId},</if>
+            <if test="revision != null">#{revision},</if>
+            <if test="shopId != null">#{shopId},</if>
+            <if test="tagId != null">#{tagId},</if>
+            <if test="deleted != null">#{deleted},</if>
+            <if test="prodId != null">#{prodId},</if>
+            <if test="createdBy != null">#{createdBy},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+            <if test="updatedBy != null">#{updatedBy},</if>
+            <if test="updatedTime != null">#{updatedTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagProductTagReference" parameterType="CcairbagProductTagReference">
+        update ccairbag_product_tag_reference
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="revision != null">revision = #{revision},</if>
+            <if test="shopId != null">shop_id = #{shopId},</if>
+            <if test="tagId != null">tag_id = #{tagId},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+            <if test="prodId != null">prod_id = #{prodId},</if>
+            <if test="createdBy != null">created_by = #{createdBy},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+            <if test="updatedBy != null">updated_by = #{updatedBy},</if>
+            <if test="updatedTime != null">updated_time = #{updatedTime},</if>
+        </trim>
+        where reference_id = #{referenceId}
+    </update>
+
+    <delete id="deleteCcairbagProductTagReferenceByReferenceId" parameterType="String">
+        update ccairbag_product_tag_reference set deleted = 1 where reference_id = #{referenceId}
+    </delete>
+
+    <delete id="deleteCcairbagProductTagReferenceByReferenceIds" parameterType="String">
+        update ccairbag_product_tag_reference set deleted = 1 where reference_id in
+        <foreach item="referenceId" collection="array" open="(" separator="," close=")">
+            #{referenceId}
+        </foreach>
+
+    </delete>
+</mapper>

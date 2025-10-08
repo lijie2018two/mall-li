@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagShopsMapper">
+
+    <resultMap type="CcairbagShops" id="CcairbagShopsResult">
+        <result property="shopId"    column="shop_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="shopName"    column="shop_name"    />
+        <result property="intro"    column="intro"    />
+        <result property="shopNotice"    column="shop_notice"    />
+        <result property="deleted"    column="deleted"    />
+        <result property="shopLogo"    column="shop_logo"    />
+        <result property="shopPhone"    column="shop_phone"    />
+        <result property="applicationStatus"    column="application_status"    />
+        <result property="applicationReason"    column="application_reason"    />
+        <result property="walletBalance"    column="wallet_balance"    />
+        <result property="walletBalanceExt"    column="wallet_balance_ext"    />
+
+        <result property="walletOrderIng"    column="wallet_order_ing"    />
+
+        <result property="businessQualificationImages"    column="business_qualification_images"    />
+
+
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectCcairbagShopsVo">
+        select shop_id, user_id, shop_name, intro,wallet_balance_ext,wallet_order_ing,business_qualification_images,
+               wallet_balance,shop_notice, deleted, shop_logo, shop_phone,
+               application_status, application_reason, create_by,
+               create_time, update_by, update_time from ccairbag_shops
+    </sql>
+
+    <select id="selectCcairbagShopsList" parameterType="CcairbagShops" resultMap="CcairbagShopsResult">
+        <include refid="selectCcairbagShopsVo"/>
+        <where>
+            deleted = 0
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="shopName != null  and shopName != ''"> and shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="intro != null  and intro != ''"> and intro = #{intro}</if>
+            <if test="shopNotice != null  and shopNotice != ''"> and shop_notice = #{shopNotice}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+            <if test="shopLogo != null  and shopLogo != ''"> and shop_logo = #{shopLogo}</if>
+            <if test="shopPhone != null  and shopPhone != ''"> and shop_phone = #{shopPhone}</if>
+            <if test="applicationStatus != null "> and application_status = #{applicationStatus}</if>
+            <if test="applicationReason != null  and applicationReason != ''"> and application_reason = #{applicationReason}</if>
+        </where>
+    </select>
+
+    <select id="selectCcairbagShopsByShopId" parameterType="Long" resultMap="CcairbagShopsResult">
+        <include refid="selectCcairbagShopsVo"/>
+        where deleted = 0 and shop_id = #{shopId}
+    </select>
+
+    <select id="getShopByUserId" parameterType="Long" resultMap="CcairbagShopsResult">
+        <include refid="selectCcairbagShopsVo"/>
+        where deleted = 0 and user_id = #{userId} and application_status = 1
+        limit 1
+    </select>
+
+    <insert id="insertCcairbagShops" parameterType="CcairbagShops" useGeneratedKeys="true" keyProperty="shopId">
+        insert into ccairbag_shops
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="shopName != null and shopName != ''">shop_name,</if>
+            <if test="intro != null">intro,</if>
+            <if test="shopNotice != null">shop_notice,</if>
+            <if test="deleted != null">deleted,</if>
+            <if test="shopLogo != null">shop_logo,</if>
+            <if test="shopPhone != null">shop_phone,</if>
+            <if test="applicationStatus != null">application_status,</if>
+            <if test="applicationReason != null">application_reason,</if>
+            <if test="walletBalance != null">wallet_balance,</if>
+            <if test="walletBalanceExt != null">wallet_balance_ext,</if>
+            <if test="walletOrderIng != null">wallet_order_ing,</if>
+            <if test="businessQualificationImages != null">business_qualification_images,</if>
+
+
+
+
+            <if test="scale != null">scale,</if>
+            <if test="dealScale != null">deal_scale,</if>
+
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="shopName != null and shopName != ''">#{shopName},</if>
+            <if test="intro != null">#{intro},</if>
+            <if test="shopNotice != null">#{shopNotice},</if>
+            <if test="deleted != null">#{deleted},</if>
+            <if test="shopLogo != null">#{shopLogo},</if>
+            <if test="shopPhone != null">#{shopPhone},</if>
+            <if test="applicationStatus != null">#{applicationStatus},</if>
+            <if test="applicationReason != null">#{applicationReason},</if>
+            <if test="walletBalance != null">#{walletBalance},</if>
+            <if test="walletBalanceExt != null">#{walletBalanceExt},</if>
+            <if test="walletOrderIng != null">#{walletOrderIng},</if>
+            <if test="businessQualificationImages != null">#{businessQualificationImages},</if>
+
+
+
+            <if test="scale != null">#{scale},</if>
+            <if test="dealScale != null">#{dealScale},</if>
+
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCcairbagShops" parameterType="CcairbagShops">
+        update ccairbag_shops
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="shopName != null and shopName != ''">shop_name = #{shopName},</if>
+            <if test="intro != null">intro = #{intro},</if>
+            <if test="shopNotice != null">shop_notice = #{shopNotice},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+            <if test="shopLogo != null">shop_logo = #{shopLogo},</if>
+            <if test="shopPhone != null">shop_phone = #{shopPhone},</if>
+            <if test="applicationStatus != null">application_status = #{applicationStatus},</if>
+            <if test="applicationReason != null">application_reason = #{applicationReason},</if>
+            <if test="walletBalance != null">wallet_balance = #{walletBalance},</if>
+            <if test="walletBalanceExt != null">wallet_balance_ext = #{walletBalanceExt},</if>
+            <if test="walletOrderIng != null">wallet_order_ing = #{walletOrderIng},</if>
+            <if test="businessQualificationImages != null">business_qualification_images = #{businessQualificationImages},</if>
+
+
+            <if test="scale != null">scale = #{scale},</if>
+            <if test="dealScale != null">deal_scale = #{dealScale},</if>
+
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where shop_id = #{shopId}
+    </update>
+
+    <delete id="deleteCcairbagShopsByShopId" parameterType="Long">
+        update ccairbag_shops set deleted = 1 where shop_id = #{shopId}
+    </delete>
+
+    <delete id="deleteCcairbagShopsByShopIds" parameterType="String">
+        update ccairbag_shops set deleted = 1 where shop_id in
+        <foreach item="shopId" collection="array" open="(" separator="," close=")">
+            #{shopId}
+        </foreach>
+
+    </delete>
+</mapper>

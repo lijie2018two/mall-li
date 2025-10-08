@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagShopBankMapper">
+
+    <resultMap type="CcairbagShopBank" id="CcairbagShopBankResult">
+        <result property="id"    column="id"    />
+        <result property="payType"    column="pay_type"    />
+        <result property="accountNumber"    column="account_number"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="phone"    column="phone"    />
+        <result property="shopName"    column="shop_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagShopBankVo">
+        select id, account_number, pay_type,  shop_id, id_card,
+               phone, shop_name, create_by, create_time,
+               update_by, update_time, deleted from ccairbag_shop_bank
+    </sql>
+
+    <select id="selectCcairbagShopBankList" parameterType="CcairbagShopBank" resultMap="CcairbagShopBankResult">
+        <include refid="selectCcairbagShopBankVo"/>
+        <where>
+            deleted = 0
+            <if test="payType != null  "> and pay_type = #{payType}</if>
+            <if test="accountNumber != null  and accountNumber != ''"> and account_number = #{accountNumber}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="idCard != null  and idCard != ''"> and id_card = #{idCard}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="shopName != null  and shopName != ''"> and shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectCcairbagShopBankById" parameterType="Long" resultMap="CcairbagShopBankResult">
+        <include refid="selectCcairbagShopBankVo"/>
+        where deleted = 0 and id = #{id}
+    </select>
+
+    <insert id="insertCcairbagShopBank" parameterType="CcairbagShopBank">
+        insert into ccairbag_shop_bank
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+
+            <if test="payType != null  ">  pay_type ,</if>
+            <if test="accountNumber != null  and accountNumber != ''">  account_number ,</if>
+
+
+            <if test="shopId != null">shop_id,</if>
+            <if test="idCard != null">id_card,</if>
+            <if test="phone != null">phone,</if>
+            <if test="shopName != null">shop_name,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+
+            <if test="payType != null  ">  #{payType} ,</if>
+            <if test="accountNumber != null  and accountNumber != ''">  #{accountNumber} ,</if>
+
+            <if test="shopId != null">#{shopId},</if>
+            <if test="idCard != null">#{idCard},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="shopName != null">#{shopName},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagShopBank" parameterType="CcairbagShopBank">
+        update ccairbag_shop_bank
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="payType != null  ">  pay_type = #{payType} ,</if>
+            <if test="accountNumber != null  and accountNumber != ''"> account_number = #{accountNumber} ,</if>
+
+            <if test="shopId != null">shop_id = #{shopId},</if>
+            <if test="idCard != null">id_card = #{idCard},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="shopName != null">shop_name = #{shopName},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCcairbagShopBankById" parameterType="Long">
+        update ccairbag_shop_bank set deleted = 1 where id = #{id}
+    </delete>
+
+    <delete id="deleteCcairbagShopBankByIds" parameterType="String">
+        update ccairbag_shop_bank set deleted = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </delete>
+</mapper>

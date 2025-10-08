@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagUserRegistrationMapper">
+
+    <resultMap type="CcairbagUserRegistration" id="CcairbagUserRegistrationResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userType"    column="user_type"    />
+        <result property="realName"    column="real_name"    />
+        <result property="idCardType"    column="id_card_type"    />
+        <result property="idCardNumber"    column="id_card_number"    />
+        <result property="homeAddress"    column="home_address"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="companyLocation"    column="company_location"    />
+        <result property="companyCode"    column="company_code"    />
+        <result property="companyAddress"    column="company_address"    />
+        <result property="phone"    column="phone"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="deleted"    column="deleted"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectCcairbagUserRegistrationVo">
+        select id, user_id, user_type, real_name, id_card_type, id_card_number, home_address, phone, company_name, company_location, company_code, company_address, create_by, create_time, update_by, deleted, update_time from ccairbag_user_registration
+    </sql>
+
+    <select id="selectCcairbagUserRegistrationList" parameterType="CcairbagUserRegistration" resultMap="CcairbagUserRegistrationResult">
+        <include refid="selectCcairbagUserRegistrationVo"/>
+        <where>
+            deleted = 0
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userType != null "> and user_type = #{userType}</if>
+            <if test="realName != null  and realName != ''"> and real_name like concat('%', #{realName}, '%')</if>
+            <if test="idCardType != null  and idCardType != ''"> and id_card_type = #{idCardType}</if>
+            <if test="idCardNumber != null  and idCardNumber != ''"> and id_card_number = #{idCardNumber}</if>
+            <if test="homeAddress != null  and homeAddress != ''"> and home_address = #{homeAddress}</if>
+            <if test="companyName != null  and companyName != ''"> and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="companyLocation != null  and companyLocation != ''"> and company_location = #{companyLocation}</if>
+            <if test="companyCode != null  and companyCode != ''"> and company_code = #{companyCode}</if>
+            <if test="companyAddress != null  and companyAddress != ''"> and company_address = #{companyAddress}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+
+    <select id="selectCcairbagUserRegistrationById" parameterType="Long" resultMap="CcairbagUserRegistrationResult">
+        <include refid="selectCcairbagUserRegistrationVo"/>
+        where deleted = 0 and id = #{id}
+    </select>
+
+    <insert id="insertCcairbagUserRegistration" parameterType="CcairbagUserRegistration" useGeneratedKeys="true" keyProperty="id">
+        insert into ccairbag_user_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="userType != null">user_type,</if>
+            <if test="realName != null">real_name,</if>
+            <if test="idCardType != null">id_card_type,</if>
+            <if test="idCardNumber != null">id_card_number,</if>
+            <if test="homeAddress != null">home_address,</if>
+            <if test="companyName != null">company_name,</if>
+            <if test="companyLocation != null">company_location,</if>
+            <if test="companyCode != null">company_code,</if>
+            <if test="companyAddress != null">company_address,</if>
+            <if test="phone != null">phone,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="deleted != null">deleted,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="userType != null">#{userType},</if>
+            <if test="realName != null">#{realName},</if>
+            <if test="idCardType != null">#{idCardType},</if>
+            <if test="idCardNumber != null">#{idCardNumber},</if>
+            <if test="homeAddress != null">#{homeAddress},</if>
+            <if test="companyName != null">#{companyName},</if>
+            <if test="companyLocation != null">#{companyLocation},</if>
+            <if test="companyCode != null">#{companyCode},</if>
+            <if test="companyAddress != null">#{companyAddress},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="deleted != null">#{deleted},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCcairbagUserRegistration" parameterType="CcairbagUserRegistration">
+        update ccairbag_user_registration
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="userType != null">user_type = #{userType},</if>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="idCardType != null">id_card_type = #{idCardType},</if>
+            <if test="idCardNumber != null">id_card_number = #{idCardNumber},</if>
+            <if test="homeAddress != null">home_address = #{homeAddress},</if>
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="companyLocation != null">company_location = #{companyLocation},</if>
+            <if test="companyCode != null">company_code = #{companyCode},</if>
+            <if test="companyAddress != null">company_address = #{companyAddress},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCcairbagUserRegistrationById" parameterType="Long">
+        update ccairbag_user_registration set deleted = 1 where id = #{id}
+    </delete>
+
+    <delete id="deleteCcairbagUserRegistrationByIds" parameterType="String">
+        update ccairbag_user_registration set deleted = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </delete>
+</mapper>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagProductPromotionRelationsMapper">
+    
+    <resultMap type="CcairbagProductPromotionRelations" id="CcairbagProductPromotionRelationsResult">
+        <result property="id"    column="id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="activityId"    column="activity_id"    />
+        <result property="priority"    column="priority"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <resultMap type="CcairbagProducts" id="CcairbagProductsResult">
+        <result property="productId"    column="product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="shopName"    column="shop_name"    />
+        <result property="returnPolicy"    column="return_policy"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="fullCategoryName"    column="full_category_name"    />
+        <result property="conditionType"    column="condition_type"    />
+        <result property="description"    column="description"    />
+        <result property="status"    column="status"    />
+        <result property="applicationReason"    column="application_reason"    />
+        <result property="deliveryFeeMode"    column="delivery_fee_mode"    />
+
+        <result property="oriPrice"    column="ori_price"    />
+        <result property="price"    column="price"    />
+        <result property="pic"    column="pic"    />
+        <result property="imgs"    column="imgs"    />
+        <result property="totalQuantity"    column="total_quantity"    />
+        <result property="salesVolume"    column="sales_volume"    />
+        <result property="addrId"    column="addr_id"    />
+
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="version"    column="version"    />
+        <result property="showProductId" column="productId"/>
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagProductPromotionRelationsVo">
+        select id, product_id, activity_id, priority, create_by, create_time, update_by, update_time, deleted from ccairbag_product_promotion_relations
+    </sql>
+
+    <select id="selectCcairbagProductPromotionRelationsList" parameterType="CcairbagProductPromotionRelations" resultMap="CcairbagProductPromotionRelationsResult">
+        <include refid="selectCcairbagProductPromotionRelationsVo"/>
+        <where>
+            deleted = 0
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="activityId != null "> and activity_id = #{activityId}</if>
+            <if test="priority != null "> and priority = #{priority}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+
+    <select id="selectProductList" parameterType="Long" resultMap="CcairbagProductsResult">
+        select  b.* from ccairbag_product_promotion_relations a,ccairbag_products b
+        where  a.product_id = b.product_id
+        and a.activity_id = #{activityId}
+        and a.deleted = 0
+        and b.deleted = 0
+        and b.status = 0
+        and b.total_quantity >0
+    </select>
+
+    <select id="getPromotionRelationsInfo"  resultMap="CcairbagProductPromotionRelationsResult">
+        select  * from ccairbag_product_promotion_relations
+        where  activity_id = #{activityId}
+        and product_id = #{productId}
+        and deleted = 0
+    </select>
+
+
+    <select id="selectCcairbagProductPromotionRelationsById" parameterType="Long" resultMap="CcairbagProductPromotionRelationsResult">
+        <include refid="selectCcairbagProductPromotionRelationsVo"/>
+        where deleted = 0 and id = #{id}
+    </select>
+
+    <insert id="insertCcairbagProductPromotionRelations" parameterType="CcairbagProductPromotionRelations">
+        insert into ccairbag_product_promotion_relations
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="activityId != null">activity_id,</if>
+            <if test="priority != null">priority,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="activityId != null">#{activityId},</if>
+            <if test="priority != null">#{priority},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagProductPromotionRelations" parameterType="CcairbagProductPromotionRelations">
+        update ccairbag_product_promotion_relations
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="activityId != null">activity_id = #{activityId},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCcairbagProductPromotionRelationsById" parameterType="Long">
+        update ccairbag_product_promotion_relations set deleted = 1 where id = #{id}
+    </delete>
+
+    <delete id="deleteCcairbagProductPromotionRelationsByIds" parameterType="String">
+        update ccairbag_product_promotion_relations set deleted = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </delete>
+</mapper>

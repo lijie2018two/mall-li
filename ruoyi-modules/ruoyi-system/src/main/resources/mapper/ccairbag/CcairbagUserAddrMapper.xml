@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagUserAddrMapper">
+
+    <resultMap type="CcairbagUserAddr" id="CcairbagUserAddrResult">
+        <result property="addrId"    column="addr_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="addrType"    column="addr_type"    />
+        <result property="receiver"    column="receiver"    />
+        <result property="country"    column="country"    />
+        <result property="stateProvince"    column="state_province"    />
+        <result property="city"    column="city"    />
+        <result property="phone"    column="phone"    />
+        <result property="street"    column="street"    />
+        <result property="houseNumber"    column="house_number"    />
+        <result property="postCode"    column="post_code"    />
+        <result property="status"    column="status"    />
+        <result property="commonAddr"    column="common_addr"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagUserAddrVo">
+        select addr_id, user_id, addr_type,receiver, country, state_province, city, phone, street, house_number, post_code, status, common_addr, create_time, update_time, deleted from ccairbag_user_addr
+    </sql>
+
+    <select id="selectCcairbagUserAddrList" parameterType="CcairbagUserAddr" resultMap="CcairbagUserAddrResult">
+        <include refid="selectCcairbagUserAddrVo"/>
+        <where>
+            deleted = 0
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="receiver != null  and receiver != ''"> and receiver = #{receiver}</if>
+            <if test="country != null  and country != ''"> and country = #{country}</if>
+            <if test="addrType != null "> and addrType = #{addr_type}</if>
+            <if test="stateProvince != null   and stateProvince != ''"> and state_province = #{stateProvince}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="street != null  and street != ''"> and street = #{street}</if>
+            <if test="houseNumber != null  and houseNumber != ''"> and house_number = #{houseNumber}</if>
+            <if test="postCode != null  and postCode != ''"> and post_code = #{postCode}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="commonAddr != null "> and common_addr = #{commonAddr}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+
+    <select id="selectCcairbagUserAddrByAddrId" parameterType="Long" resultMap="CcairbagUserAddrResult">
+        <include refid="selectCcairbagUserAddrVo"/>
+        where deleted = 0 and addr_id = #{addrId}
+    </select>
+
+    <select id="selectCcairbagUserAddrByUserId" parameterType="Long" resultMap="CcairbagUserAddrResult">
+        <include refid="selectCcairbagUserAddrVo"/>
+        where deleted = 0 and user_id = #{userId}
+    </select>
+
+    <select id="selectCcairbagUserAddrByUserIdExt" parameterType="Long" resultMap="CcairbagUserAddrResult">
+        <include refid="selectCcairbagUserAddrVo"/>
+        where deleted = 0 and user_id = #{userId} and addr_type = 1 limit 1
+    </select>
+
+
+
+    <update id="setCommonAddr" parameterType="Long">
+        update ccairbag_user_addr
+        set common_addr = 0
+        where user_id = #{userId}
+    </update>
+
+
+
+    <insert id="insertCcairbagUserAddr" parameterType="CcairbagUserAddr" useGeneratedKeys="true" keyProperty="addrId">
+        insert into ccairbag_user_addr
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="receiver != null">receiver,</if>
+            <if test="country != null">country,</if>
+            <if test="stateProvince != null   and stateProvince != ''"> state_province,</if>
+            <if test="city != null">city,</if>
+            <if test="phone != null">phone,</if>
+            <if test="addrType != null "> addr_type,</if>
+
+            <if test="street != null">street,</if>
+            <if test="houseNumber != null">house_number,</if>
+            <if test="postCode != null">post_code,</if>
+            <if test="status != null">status,</if>
+            <if test="commonAddr != null">common_addr,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="receiver != null">#{receiver},</if>
+            <if test="country != null">#{country},</if>
+            <if test="stateProvince != null   and stateProvince != ''"> #{stateProvince},</if>
+            <if test="city != null">#{city},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="addrType != null "> #{addrType},</if>
+
+            <if test="street != null">#{street},</if>
+            <if test="houseNumber != null">#{houseNumber},</if>
+            <if test="postCode != null">#{postCode},</if>
+            <if test="status != null">#{status},</if>
+            <if test="commonAddr != null">#{commonAddr},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCcairbagUserAddr" parameterType="CcairbagUserAddr">
+        update ccairbag_user_addr
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="receiver != null">receiver = #{receiver},</if>
+            <if test="country != null">country = #{country},</if>
+            <if test="stateProvince != null   and stateProvince != ''"> state_province = #{stateProvince},</if>
+            <if test="city != null">city = #{city},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="addrType != null "> addr_type = #{addrType},</if>
+
+            <if test="street != null">street = #{street},</if>
+            <if test="houseNumber != null">house_number = #{houseNumber},</if>
+            <if test="postCode != null">post_code = #{postCode},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="commonAddr != null">common_addr = #{commonAddr},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where addr_id = #{addrId}
+    </update>
+
+    <delete id="deleteCcairbagUserAddrByAddrId" parameterType="Long">
+        update ccairbag_user_addr set deleted = 1 where addr_id = #{addrId}
+    </delete>
+
+    <delete id="deleteCcairbagUserAddrByAddrIds" parameterType="String">
+        update ccairbag_user_addr set deleted = 1 where addr_id in
+        <foreach item="addrId" collection="array" open="(" separator="," close=")">
+            #{addrId}
+        </foreach>
+
+    </delete>
+</mapper>

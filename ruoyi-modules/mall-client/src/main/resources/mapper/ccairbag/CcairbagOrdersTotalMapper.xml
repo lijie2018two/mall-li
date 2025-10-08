@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagOrdersTotalMapper">
+
+    <resultMap type="CcairbagOrdersTotal" id="CcairbagOrdersTotalMap">
+        <result property="orderTotalId" column="order_total_id" />
+        <result property="userId" column="user_id" />
+        <result property="totalAmount" column="total_amount" />
+        <result property="finalAmount" column="final_amount" />
+        <result property="paymentFee" column="payment_fee" />
+        <result property="tariff" column="tariff" />
+        <result property="payTime" column="pay_time" />
+        <result property="orderStatus"    column="order_status"    />
+
+        <result property="productNums"    column="product_nums"    />
+        <result property="orderNumber"    column="order_number"    />
+
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+        <result property="deleted" column="deleted" />
+        <result property="payType" column="pay_type"/>
+        <result property="remarks" column="remarks" />
+        <result property="addrId" column="addr_id" />
+    </resultMap>
+
+
+
+
+    <sql id="selectCcairbagOrdersVo">
+        select
+            order_total_id,user_id,total_amount,order_status,order_number,product_nums,
+            final_amount,payment_fee,tariff,pay_time,create_time,
+            update_time,deleted,pay_type,remarks,addr_id
+        from ccairbag_orders_total
+    </sql>
+
+    <select id="queryAll" parameterType="CcairbagOrdersTotal" resultMap="CcairbagOrdersTotalMap">
+        <include refid="selectCcairbagOrdersVo"/>
+        <where>
+            deleted = 0
+
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId}
+            </if>
+            <if test="totalAmount != null and totalAmount != ''">
+                and total_amount = #{totalAmount}
+            </if>
+            <if test="productNums != null "> and product_nums = #{productNums}</if>
+            <if test="orderNumber != null  and orderNumber != ''"> and order_number = #{orderNumber}</if>
+
+            <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+
+            <if test="finalAmount != null and finalAmount != ''">
+                and final_amount = #{finalAmount}
+            </if>
+            <if test="paymentFee != null ">
+                and payment_fee = #{paymentFee}
+            </if>
+            <if test="tariff != null and tariff != ''">
+                and tariff = #{tariff}
+            </if>
+            <if test="payTime != null ">
+                and pay_time = #{payTime}
+            </if>
+            <if test="createTime != null and createTime != ''">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null ">
+                and update_time = #{updateTime}
+            </if>
+            <if test="deleted != null ">
+                and deleted = #{deleted}
+            </if>
+            <if test="payType != null and payType != ''">
+                and pay_type = #{payType}
+            </if>
+            <if test="remarks != null and remarks != ''">
+                and remarks = #{remarks}
+            </if>
+            <if test="addrId != null and addrId != ''">
+                and addr_id = #{addrId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="queryById" parameterType="Long" resultMap="CcairbagOrdersTotalMap">
+        <include refid="selectCcairbagOrdersVo"/>
+        where deleted = 0 and order_total_id = #{orderTotalId}
+    </select>
+
+    <insert id="insert" parameterType="CcairbagOrdersTotal" useGeneratedKeys="true" keyProperty="orderTotalId">
+        insert into ccairbag_orders_total
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">
+                user_id ,
+            </if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="orderNumber != null and orderNumber != ''">order_number,</if>
+            <if test="productNums != null">product_nums,</if>
+            <if test="totalAmount != null and totalAmount != ''">
+                total_amount ,
+            </if>
+            <if test="finalAmount != null ">
+                final_amount ,
+            </if>
+            <if test="paymentFee != null ">
+                payment_fee ,
+            </if>
+            <if test="tariff != null and tariff != ''">
+                tariff ,
+            </if>
+            <if test="payTime != null ">
+                pay_time ,
+            </if>
+            <if test="createTime != null ">
+                create_time ,
+            </if>
+            <if test="updateTime != null ">
+                update_time,
+            </if>
+            <if test="deleted != null ">
+                deleted,
+            </if>
+            <if test="payType != null ">
+                pay_type ,
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks ,
+            </if>
+            <if test="addrId != null ">
+                addr_id ,
+            </if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">
+                 #{userId},
+            </if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="orderNumber != null and orderNumber != ''">#{orderNumber},</if>
+            <if test="productNums != null">#{productNums},</if>
+            <if test="totalAmount != null and totalAmount != ''">
+                 #{totalAmount},
+            </if>
+            <if test="finalAmount != null ">
+                 #{finalAmount},
+            </if>
+            <if test="paymentFee != null ">
+                 #{paymentFee},
+            </if>
+            <if test="tariff != null and tariff != ''">
+                 #{tariff},
+            </if>
+            <if test="payTime != null ">
+                #{payTime},
+            </if>
+            <if test="createTime != null ">
+                #{createTime},
+            </if>
+            <if test="updateTime != null ">
+                 #{updateTime},
+            </if>
+            <if test="deleted != null ">
+                #{deleted},
+            </if>
+            <if test="payType != null ">
+                 #{payType},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                #{remarks},
+            </if>
+            <if test="addrId != null ">
+                 #{addrId},
+            </if>
+         </trim>
+    </insert>
+
+    <update id="update" parameterType="CcairbagOrdersTotal">
+        update ccairbag_orders_total
+        <trim prefix="SET" suffixOverrides=",">
+
+            <if test="userId != null and userId != ''">
+                user_id = #{userId},
+            </if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="orderNumber != null and orderNumber != ''">order_number = #{orderNumber},</if>
+            <if test="productNums != null">product_nums = #{productNums},</if>
+            <if test="totalAmount != null and totalAmount != ''">
+                total_amount = #{totalAmount},
+            </if>
+            <if test="finalAmount != null ">
+                final_amount = #{finalAmount},
+            </if>
+            <if test="paymentFee != null ">
+                payment_fee = #{paymentFee},
+            </if>
+            <if test="tariff != null and tariff != ''">
+                tariff = #{tariff},
+            </if>
+            <if test="payTime != null ">
+                pay_time = #{payTime},
+            </if>
+            <if test="createTime != null ">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null ">
+                update_time = #{updateTime},
+            </if>
+            <if test="deleted != null ">
+                deleted = #{deleted},
+            </if>
+            <if test="payType != null ">
+                pay_type = #{payType},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks = #{remarks},
+            </if>
+            <if test="addrId != null ">
+                addr_id = #{addrId},
+            </if>
+        </trim>
+        where order_total_id = #{orderTotalId}
+    </update>
+
+
+</mapper>

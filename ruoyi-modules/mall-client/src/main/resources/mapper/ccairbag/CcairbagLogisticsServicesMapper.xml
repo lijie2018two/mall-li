@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagLogisticsServicesMapper">
+    
+    <resultMap type="CcairbagLogisticsServices" id="CcairbagLogisticsServicesResult">
+        <result property="serviceId"    column="service_id"    />
+        <result property="serviceName"    column="service_name"    />
+        <result property="providerName"    column="provider_name"    />
+        <result property="description"    column="description"    />
+        <result property="baseFee"    column="base_fee"    />
+        <result property="additionalFeeRules"    column="additional_fee_rules"    />
+        <result property="shippingType"    column="shipping_type"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagLogisticsServicesVo">
+        select service_id, service_name, provider_name, description, base_fee, additional_fee_rules, shipping_type, create_by, create_time, update_by, update_time, deleted from ccairbag_logistics_services
+    </sql>
+
+    <select id="selectCcairbagLogisticsServicesList" parameterType="CcairbagLogisticsServices" resultMap="CcairbagLogisticsServicesResult">
+        <include refid="selectCcairbagLogisticsServicesVo"/>
+        <where>
+            deleted = 0
+            <if test="serviceName != null  and serviceName != ''"> and service_name like concat('%', #{serviceName}, '%')</if>
+            <if test="baseFee != null "> and base_fee = #{baseFee}</if>
+            <if test="additionalFeeRules != null  and additionalFeeRules != ''"> and additional_fee_rules = #{additionalFeeRules}</if>
+            <if test="shippingType != null "> and shipping_type = #{shippingType}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagLogisticsServicesByServiceId" parameterType="Long" resultMap="CcairbagLogisticsServicesResult">
+        <include refid="selectCcairbagLogisticsServicesVo"/>
+        where deleted = 0 and service_id = #{serviceId}
+    </select>
+
+    <insert id="insertCcairbagLogisticsServices" parameterType="CcairbagLogisticsServices" useGeneratedKeys="true" keyProperty="serviceId">
+        insert into ccairbag_logistics_services
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serviceName != null and serviceName != ''">service_name,</if>
+            <if test="providerName != null and providerName != ''">provider_name,</if>
+            <if test="description != null">description,</if>
+            <if test="baseFee != null">base_fee,</if>
+            <if test="additionalFeeRules != null">additional_fee_rules,</if>
+            <if test="shippingType != null">shipping_type,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serviceName != null and serviceName != ''">#{serviceName},</if>
+            <if test="providerName != null and providerName != ''">#{providerName},</if>
+            <if test="description != null">#{description},</if>
+            <if test="baseFee != null">#{baseFee},</if>
+            <if test="additionalFeeRules != null">#{additionalFeeRules},</if>
+            <if test="shippingType != null">#{shippingType},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagLogisticsServices" parameterType="CcairbagLogisticsServices">
+        update ccairbag_logistics_services
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="serviceName != null and serviceName != ''">service_name = #{serviceName},</if>
+            <if test="providerName != null and providerName != ''">provider_name = #{providerName},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="baseFee != null">base_fee = #{baseFee},</if>
+            <if test="additionalFeeRules != null">additional_fee_rules = #{additionalFeeRules},</if>
+            <if test="shippingType != null">shipping_type = #{shippingType},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where service_id = #{serviceId}
+    </update>
+
+    <delete id="deleteCcairbagLogisticsServicesByServiceId" parameterType="Long">
+        update ccairbag_logistics_services set deleted = 1 where service_id = #{serviceId}
+    </delete>
+
+    <delete id="deleteCcairbagLogisticsServicesByServiceIds" parameterType="String">
+        update ccairbag_logistics_services set deleted = 1 where service_id in
+        <foreach item="serviceId" collection="array" open="(" separator="," close=")">
+            #{serviceId}
+        </foreach>
+
+    </delete>
+</mapper>

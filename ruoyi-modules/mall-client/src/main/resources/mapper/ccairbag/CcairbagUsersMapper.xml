@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagUsersMapper">
+    
+    <resultMap type="CcairbagUsers" id="CcairbagUsersResult">
+        <result property="userId"    column="user_id"    />
+        <result property="userType"    column="user_type"    />
+        <result property="firstName"    column="first_name"    />
+        <result property="lastName"    column="last_name"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="companyAddress"    column="company_address"    />
+        <result property="headimgurl"    column="headimgurl"    />
+        <result property="userName"    column="user_name"    />
+        <result property="email"    column="email"    />
+        <result property="passwordHash"    column="password_hash"    />
+
+        <result property="showPhone"    column="show_phone"    />
+        <result property="phone"    column="phone"    />
+
+        <result property="isVerified"    column="is_verified"    />
+        <result property="qualificationStatus"    column="qualification_status"    />
+
+
+
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="deleted"    column="deleted"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectCcairbagUsersVo">
+        select user_id, user_type, first_name, last_name,phone,qualification_status,
+               show_phone,is_verified,  headimgurl, user_name,
+               email, password_hash, create_by, create_time,
+               update_by, deleted, update_time from ccairbag_users
+    </sql>
+
+    <select id="selectCcairbagUsersList" parameterType="CcairbagUsers" resultMap="CcairbagUsersResult">
+        <include refid="selectCcairbagUsersVo"/>
+        <where>
+            deleted = 0
+            <if test="firstName != null  and firstName != ''"> and first_name like concat('%', #{firstName}, '%')</if>
+            <if test="lastName != null  and lastName != ''"> and last_name like concat('%', #{lastName}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone like concat('%', #{phone}, '%')</if>
+
+            <if test="headimgurl != null  and headimgurl != ''"> and headimgurl = #{headimgurl}</if>
+            <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+
+            <if test="showPhone != null "> and show_phone = #{showPhone}</if>
+            <if test="isVerified != null "> and is_verified = #{isVerified}</if>
+            <if test="qualificationStatus != null "> and qualification_status = #{qualificationStatus}</if>
+
+
+
+            <if test="email != null  and email != ''"> and email = #{email}</if>
+            <if test="passwordHash != null  and passwordHash != ''"> and password_hash = #{passwordHash}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagUsersByUserId" parameterType="Long" resultMap="CcairbagUsersResult">
+        <include refid="selectCcairbagUsersVo"/>
+        where deleted = 0 and user_id = #{userId}
+    </select>
+
+    <select id="getUserInfo" parameterType="String" resultMap="CcairbagUsersResult">
+        <include refid="selectCcairbagUsersVo"/>
+        where deleted = 0 and email = #{email}
+    </select>
+
+    <insert id="insertCcairbagUsers" parameterType="CcairbagUsers" useGeneratedKeys="true" keyProperty="userId">
+        insert into ccairbag_users
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userType != null">user_type,</if>
+            <if test="firstName != null">first_name,</if>
+            <if test="lastName != null">last_name,</if>
+            <if test="phone != null">phone,</if>
+            <if test="headimgurl != null">headimgurl,</if>
+            <if test="userName != null and userName != ''">user_name,</if>
+            <if test="email != null and email != ''">email,</if>
+            <if test="passwordHash != null and passwordHash != ''">password_hash,</if>
+
+            <if test="qualificationStatus != null ">  qualification_status,</if>
+
+            <if test="showPhone != null ">  show_phone,</if>
+            <if test="isVerified != null ">  is_verified ,</if>
+
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="deleted != null">deleted,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userType != null">#{userType},</if>
+            <if test="firstName != null">#{firstName},</if>
+            <if test="lastName != null">#{lastName},</if>
+            <if test="phone != null">#{phone},</if>
+
+            <if test="headimgurl != null">#{headimgurl},</if>
+            <if test="userName != null and userName != ''">#{userName},</if>
+            <if test="email != null and email != ''">#{email},</if>
+            <if test="passwordHash != null and passwordHash != ''">#{passwordHash},</if>
+            <if test="qualificationStatus != null ">  #{qualificationStatus},</if>
+
+            <if test="showPhone != null ">  #{showPhone},</if>
+            <if test="isVerified != null ">  #{isVerified} ,</if>
+
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="deleted != null">#{deleted},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagUsers" parameterType="CcairbagUsers">
+        update ccairbag_users
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userType != null">user_type = #{userType},</if>
+            <if test="firstName != null">first_name = #{firstName},</if>
+            <if test="lastName != null">last_name = #{lastName},</if>
+
+            <if test="phone != null">phone = #{phone},</if>
+
+            <if test="qualificationStatus != null">qualification_status = #{qualificationStatus},</if>
+
+            <if test="headimgurl != null">headimgurl = #{headimgurl},</if>
+            <if test="userName != null and userName != ''">user_name = #{userName},</if>
+            <if test="email != null and email != ''">email = #{email},</if>
+            <if test="passwordHash != null and passwordHash != ''">password_hash = #{passwordHash},</if>
+            <if test="showPhone != null "> show_phone =  #{showPhone},</if>
+            <if test="isVerified != null ">  is_verified = #{isVerified} ,</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteCcairbagUsersByUserId" parameterType="Long">
+        update ccairbag_users set deleted = 1 where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteCcairbagUsersByUserIds" parameterType="String">
+        update ccairbag_users set deleted = 1 where user_id in
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+
+    </delete>
+</mapper>

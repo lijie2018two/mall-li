@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagNotificationMapper">
+    
+    <resultMap type="CcairbagNotification" id="CcairbagNotificationResult">
+        <result property="notificationId"    column="notification_id"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="notificationType"    column="notification_type"    />
+        <result property="isBroadcast"    column="is_broadcast"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+
+        <result property="readStatus"    column="read_status"    />
+    </resultMap>
+
+
+
+
+    <sql id="selectCcairbagNotificationVo">
+        select notification_id, title, content, notification_type, is_broadcast, create_by, create_time, update_by, update_time, deleted from ccairbag_notification
+    </sql>
+
+    <select id="selectCcairbagNotificationList" parameterType="CcairbagNotification" resultMap="CcairbagNotificationResult">
+        <include refid="selectCcairbagNotificationVo"/>
+        <where>
+            deleted = 0
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="notificationType != null  and notificationType != ''"> and notification_type = #{notificationType}</if>
+            <if test="isBroadcast != null "> and is_broadcast = #{isBroadcast}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+
+    <select id="selectNotificationList" parameterType="Long" resultMap="CcairbagNotificationResult">
+        select a.*,b.read_status from ccairbag_notification a, ccairbag_notification_user b
+        where   a.deleted = 0 and b.user_id = #{userId}
+          and a.notification_id = b.notification_id
+        order by a.create_time desc
+
+    </select>
+
+    <select id="selectNotificationListExt" parameterType="Long" resultMap="CcairbagNotificationResult">
+        select a.notification_id, a.title, a.notification_type,b.read_status from ccairbag_notification a, ccairbag_notification_user b
+        where   a.deleted = 0 and b.user_id = #{userId}
+          and a.notification_id = b.notification_id
+        order by a.create_time desc
+
+    </select>
+
+    <update id="updateReadStatusByNotificationIds">
+        UPDATE ccairbag_notification_user
+        SET read_status = 1
+        WHERE user_id = #{userId}
+        AND notification_id = #{notificationId}
+
+        AND deleted =0
+    </update>
+
+    <!-- 查询用户的通知未读消息数量 -->
+    <select id="getUserNotificationUnreadCount" resultType="java.lang.Integer">
+        SELECT
+            COUNT(nu.id) AS unread_count
+        FROM
+            ccairbag_notification_user nu
+                JOIN
+            ccairbag_notification n ON nu.notification_id = n.notification_id
+        WHERE
+            nu.user_id = #{userId}
+          AND nu.read_status = 0
+          AND nu.deleted = 0
+          AND n.deleted = 0
+    </select>
+
+    <select id="selectCcairbagNotificationByNotificationId" parameterType="Long" resultMap="CcairbagNotificationResult">
+        <include refid="selectCcairbagNotificationVo"/>
+        where deleted = 0 and notification_id = #{notificationId}
+    </select>
+
+    <insert id="insertCcairbagNotification" parameterType="CcairbagNotification" useGeneratedKeys="true" keyProperty="notificationId">
+        insert into ccairbag_notification
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">title,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="notificationType != null and notificationType != ''">notification_type,</if>
+            <if test="isBroadcast != null">is_broadcast,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="notificationType != null and notificationType != ''">#{notificationType},</if>
+            <if test="isBroadcast != null">#{isBroadcast},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagNotification" parameterType="CcairbagNotification">
+        update ccairbag_notification
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="notificationType != null and notificationType != ''">notification_type = #{notificationType},</if>
+            <if test="isBroadcast != null">is_broadcast = #{isBroadcast},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where notification_id = #{notificationId}
+    </update>
+
+    <delete id="deleteCcairbagNotificationByNotificationId" parameterType="Long">
+        update ccairbag_notification set deleted = 1 where notification_id = #{notificationId}
+    </delete>
+
+    <delete id="deleteCcairbagNotificationByNotificationIds" parameterType="String">
+        update ccairbag_notification set deleted = 1 where notification_id in
+        <foreach item="notificationId" collection="array" open="(" separator="," close=")">
+            #{notificationId}
+        </foreach>
+
+    </delete>
+</mapper>

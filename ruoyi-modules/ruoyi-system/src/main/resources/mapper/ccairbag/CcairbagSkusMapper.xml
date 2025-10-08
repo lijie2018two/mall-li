@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagSkusMapper">
+    
+    <resultMap type="CcairbagSkus" id="CcairbagSkusResult">
+        <result property="skuId"    column="sku_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="skuName"    column="sku_name"    />
+        <result property="oriPrice"    column="ori_price"    />
+        <result property="price"    column="price"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="prodName"    column="prod_name"    />
+        <result property="pic"    column="pic"    />
+        <result property="properties"    column="properties"    />
+        <result property="weight"    column="weight"    />
+        <result property="volume"    column="volume"    />
+        <result property="status"    column="status"    />
+        <result property="deleted"    column="deleted"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="version"    column="version"    />
+    </resultMap>
+
+    <sql id="selectCcairbagSkusVo">
+        select sku_id, product_id, sku_name, ori_price, price, quantity, prod_name, pic, properties, weight, volume, status, deleted, create_by, create_time, update_by, update_time, version from ccairbag_skus
+    </sql>
+
+    <select id="selectCcairbagSkusList" parameterType="CcairbagSkus" resultMap="CcairbagSkusResult">
+        <include refid="selectCcairbagSkusVo"/>
+        <where>
+            deleted = 0
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="skuName != null  and skuName != ''"> and sku_name like concat('%', #{skuName}, '%')</if>
+            <if test="oriPrice != null "> and ori_price = #{oriPrice}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="prodName != null  and prodName != ''"> and prod_name like concat('%', #{prodName}, '%')</if>
+            <if test="pic != null  and pic != ''"> and pic = #{pic}</if>
+            <if test="properties != null  and properties != ''"> and properties = #{properties}</if>
+            <if test="weight != null "> and weight = #{weight}</if>
+            <if test="volume != null "> and volume = #{volume}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagSkusBySkuId" parameterType="Long" resultMap="CcairbagSkusResult">
+        <include refid="selectCcairbagSkusVo"/>
+        where deleted = 0 and sku_id = #{skuId}
+    </select>
+
+    <insert id="insertCcairbagSkus" parameterType="CcairbagSkus" useGeneratedKeys="true" keyProperty="skuId">
+        insert into ccairbag_skus
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="skuName != null and skuName != ''">sku_name,</if>
+            <if test="oriPrice != null">ori_price,</if>
+            <if test="price != null">price,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="prodName != null">prod_name,</if>
+            <if test="pic != null">pic,</if>
+            <if test="properties != null">properties,</if>
+            <if test="weight != null">weight,</if>
+            <if test="volume != null">volume,</if>
+            <if test="status != null">status,</if>
+            <if test="deleted != null">deleted,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="version != null">version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="skuName != null and skuName != ''">#{skuName},</if>
+            <if test="oriPrice != null">#{oriPrice},</if>
+            <if test="price != null">#{price},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="prodName != null">#{prodName},</if>
+            <if test="pic != null">#{pic},</if>
+            <if test="properties != null">#{properties},</if>
+            <if test="weight != null">#{weight},</if>
+            <if test="volume != null">#{volume},</if>
+            <if test="status != null">#{status},</if>
+            <if test="deleted != null">#{deleted},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="version != null">#{version},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagSkus" parameterType="CcairbagSkus">
+        update ccairbag_skus
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="skuName != null and skuName != ''">sku_name = #{skuName},</if>
+            <if test="oriPrice != null">ori_price = #{oriPrice},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="prodName != null">prod_name = #{prodName},</if>
+            <if test="pic != null">pic = #{pic},</if>
+            <if test="properties != null">properties = #{properties},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="volume != null">volume = #{volume},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="version != null">version = #{version},</if>
+        </trim>
+        where sku_id = #{skuId}
+    </update>
+
+    <delete id="deleteCcairbagSkusBySkuId" parameterType="Long">
+        update ccairbag_skus set deleted = 1 where sku_id = #{skuId}
+    </delete>
+
+    <delete id="deleteCcairbagSkusBySkuIds" parameterType="String">
+        update ccairbag_skus set deleted = 1 where sku_id in
+        <foreach item="skuId" collection="array" open="(" separator="," close=")">
+            #{skuId}
+        </foreach>
+
+    </delete>
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagParametersMapper">
+    
+    <resultMap type="CcairbagParameters" id="CcairbagParametersResult">
+        <result property="parameterId"    column="parameter_id"    />
+        <result property="parameterName"    column="parameter_name"    />
+        <result property="isMust"    column="is_must"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="deleted"    column="deleted"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+    </resultMap>
+
+    <sql id="selectCcairbagParametersVo">
+        select parameter_id, parameter_name, is_must, category_id, deleted, update_time, update_by, create_time, create_by from ccairbag_parameters
+    </sql>
+
+    <select id="selectCcairbagParametersList" parameterType="CcairbagParameters" resultMap="CcairbagParametersResult">
+        <include refid="selectCcairbagParametersVo"/>
+        <where>
+            deleted = 0
+            <if test="parameterName != null  and parameterName != ''"> and parameter_name like concat('%', #{parameterName}, '%')</if>
+            <if test="categoryId != null "> and category_id = #{categoryId}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagParametersByParameterId" parameterType="Long" resultMap="CcairbagParametersResult">
+        <include refid="selectCcairbagParametersVo"/>
+        where deleted = 0 and parameter_id = #{parameterId}
+    </select>
+
+    <insert id="insertCcairbagParameters" parameterType="CcairbagParameters" useGeneratedKeys="true" keyProperty="parameterId">
+        insert into ccairbag_parameters
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parameterName != null and parameterName != ''">parameter_name,</if>
+            <if test="isMust != null">is_must,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="deleted != null">deleted,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parameterName != null and parameterName != ''">#{parameterName},</if>
+            <if test="isMust != null">#{isMust},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="deleted != null">#{deleted},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagParameters" parameterType="CcairbagParameters">
+        update ccairbag_parameters
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parameterName != null and parameterName != ''">parameter_name = #{parameterName},</if>
+            <if test="isMust != null">is_must = #{isMust},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+        </trim>
+        where parameter_id = #{parameterId}
+    </update>
+
+    <delete id="deleteCcairbagParametersByParameterId" parameterType="Long">
+        update ccairbag_parameters set deleted = 1 where parameter_id = #{parameterId}
+    </delete>
+
+    <delete id="deleteCcairbagParametersByParameterIds" parameterType="String">
+        update ccairbag_parameters set deleted = 1 where parameter_id in
+        <foreach item="parameterId" collection="array" open="(" separator="," close=")">
+            #{parameterId}
+        </foreach>
+
+    </delete>
+</mapper>

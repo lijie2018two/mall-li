@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagCategoryMapper">
+
+    <resultMap type="CcairbagCategory" id="CcairbagCategoryResult">
+        <result property="categoryId"    column="category_id"    />
+        <result property="parentId"    column="parent_id"    />
+
+        <result property="fullCategoryName"    column="full_category_name"    />
+        <result property="categoryName"    column="category_name"    />
+
+        <result property="fullCategoryNameEn"    column="full_category_name_en"    />
+        <result property="categoryNameEn"    column="category_name_en"    />
+
+        <result property="seq"    column="seq"    />
+        <result property="status"    column="status"    />
+        <result property="recTime"    column="rec_time"    />
+        <result property="grade"    column="grade"    />
+        <result property="deleted"    column="deleted"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectCcairbagCategoryVo">
+        select category_id, parent_id, full_category_name,category_name,
+               full_category_name_en,category_name_en,
+               seq, status, rec_time, grade, deleted, create_by, create_time, update_by, update_time from ccairbag_category
+    </sql>
+
+    <select id="selectCcairbagCategoryList" parameterType="CcairbagCategory" resultMap="CcairbagCategoryResult">
+        <include refid="selectCcairbagCategoryVo"/>
+        <where>
+            deleted = 0
+            <if test="parentId != null "> and parent_id = #{parentId}</if>
+            <if test="categoryName != null  and categoryName != ''"> and category_name like concat('%', #{categoryName}, '%')</if>
+            <if test="seq != null "> and seq = #{seq}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="recTime != null "> and rec_time = #{recTime}</if>
+            <if test="grade != null "> and grade = #{grade}</if>
+        </where>
+        order by seq
+    </select>
+
+
+    <select id="selectCcairbagCategoriesByParentId" resultMap="CcairbagCategoryResult">
+        SELECT *
+        FROM ccairbag_category
+        WHERE parent_id = #{parentId}
+    </select>
+
+    <select id="getShopPopularCategoriesBySales" resultMap="CcairbagCategoryResult">
+        SELECT
+            c.category_id,
+            c.category_name,
+            c.full_category_name,
+            c.full_category_name_en,
+            c.category_name_en,
+            SUM(p.sales_volume) AS total_sales  -- 分类下的总销量
+        FROM ccairbag_shops s
+                 JOIN ccairbag_products p ON s.shop_id = p.shop_id  -- 店铺→商品
+                 LEFT JOIN ccairbag_category c ON p.category_id = c.category_id  -- 商品→分类
+        WHERE s.shop_id = #{shopId}
+        GROUP BY c.category_id, c.category_name
+        ORDER BY total_sales DESC
+            LIMIT 5;
+    </select>
+
+
+    <select id="selectCcairbagCategoryByCategoryId" parameterType="Long" resultMap="CcairbagCategoryResult">
+        <include refid="selectCcairbagCategoryVo"/>
+        where deleted = 0 and category_id = #{categoryId}
+    </select>
+
+    <insert id="insertCcairbagCategory" parameterType="CcairbagCategory" useGeneratedKeys="true" keyProperty="categoryId">
+        insert into ccairbag_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">parent_id,</if>
+            <if test="fullCategoryName != null and fullCategoryName != ''">full_category_name,</if>
+            <if test="categoryName != null and categoryName != ''">category_name,</if>
+
+            <if test="fullCategoryNameEn != null and fullCategoryNameEn != ''">full_category_name_en,</if>
+            <if test="categoryNameEn != null and categoryNameEn != ''">category_name_en,</if>
+
+            <if test="seq != null">seq,</if>
+            <if test="status != null">status,</if>
+            <if test="recTime != null">rec_time,</if>
+            <if test="grade != null">grade,</if>
+            <if test="deleted != null">deleted,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">#{parentId},</if>
+            <if test="fullCategoryName != null and fullCategoryName != ''">#{fullCategoryName},</if>
+
+            <if test="categoryName != null and categoryName != ''">#{categoryName},</if>
+
+            <if test="fullCategoryNameEn != null and fullCategoryNameEn != ''">#{fullCategoryNameEn},</if>
+            <if test="categoryNameEn != null and categoryNameEn != ''">#{categoryNameEn},</if>
+            <if test="seq != null">#{seq},</if>
+            <if test="status != null">#{status},</if>
+            <if test="recTime != null">#{recTime},</if>
+            <if test="grade != null">#{grade},</if>
+            <if test="deleted != null">#{deleted},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCcairbagCategory" parameterType="CcairbagCategory">
+        update ccairbag_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="fullCategoryName != null and fullCategoryName != ''">full_category_name = #{fullCategoryName},</if>
+            <if test="categoryName != null and categoryName != ''">category_name = #{categoryName},</if>
+
+            <if test="fullCategoryNameEn != null and fullCategoryNameEn != ''">full_category_name_en=#{fullCategoryNameEn},</if>
+            <if test="categoryNameEn != null and categoryNameEn != ''">category_name_en=#{categoryNameEn},</if>
+
+            <if test="seq != null">seq = #{seq},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="recTime != null">rec_time = #{recTime},</if>
+            <if test="grade != null">grade = #{grade},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where category_id = #{categoryId}
+    </update>
+
+    <delete id="deleteCcairbagCategoryByCategoryId" parameterType="Long">
+        update ccairbag_category set deleted = 1 where category_id = #{categoryId}
+    </delete>
+
+    <delete id="deleteCcairbagCategoryByCategoryIds" parameterType="String">
+        update ccairbag_category set deleted = 1 where category_id in
+        <foreach item="categoryId" collection="array" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
+
+    </delete>
+</mapper>

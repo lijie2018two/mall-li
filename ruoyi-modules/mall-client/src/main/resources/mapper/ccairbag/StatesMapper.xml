@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.StatesMapper">
+    
+    <resultMap type="States" id="StatesResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="countryId"    column="country_id"    />
+        <result property="countryCode"    column="country_code"    />
+        <result property="countryName"    column="country_name"    />
+        <result property="stateCode"    column="state_code"    />
+        <result property="type"    column="type"    />
+        <result property="latitude"    column="latitude"    />
+        <result property="longitude"    column="longitude"    />
+    </resultMap>
+
+    <sql id="selectStatesVo">
+        select id, name, country_id, country_code, country_name, state_code, type, latitude, longitude from states
+    </sql>
+
+    <select id="selectStatesList" parameterType="States" resultMap="StatesResult">
+        <include refid="selectStatesVo"/>
+        <where>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="countryId != null  and countryId != ''"> and country_id = #{countryId}</if>
+            <if test="countryCode != null  and countryCode != ''"> and country_code = #{countryCode}</if>
+            <if test="countryName != null  and countryName != ''"> and country_name like concat('%', #{countryName}, '%')</if>
+            <if test="stateCode != null  and stateCode != ''"> and state_code = #{stateCode}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="latitude != null  and latitude != ''"> and latitude = #{latitude}</if>
+            <if test="longitude != null  and longitude != ''"> and longitude = #{longitude}</if>
+        </where>
+    </select>
+    
+    <select id="selectStatesById" parameterType="String" resultMap="StatesResult">
+        <include refid="selectStatesVo"/>
+        where deleted = 0 and id = #{id}
+    </select>
+
+    <insert id="insertStates" parameterType="States">
+        insert into states
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="countryId != null">country_id,</if>
+            <if test="countryCode != null">country_code,</if>
+            <if test="countryName != null">country_name,</if>
+            <if test="stateCode != null">state_code,</if>
+            <if test="type != null">type,</if>
+            <if test="latitude != null">latitude,</if>
+            <if test="longitude != null">longitude,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="countryId != null">#{countryId},</if>
+            <if test="countryCode != null">#{countryCode},</if>
+            <if test="countryName != null">#{countryName},</if>
+            <if test="stateCode != null">#{stateCode},</if>
+            <if test="type != null">#{type},</if>
+            <if test="latitude != null">#{latitude},</if>
+            <if test="longitude != null">#{longitude},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStates" parameterType="States">
+        update states
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="countryId != null">country_id = #{countryId},</if>
+            <if test="countryCode != null">country_code = #{countryCode},</if>
+            <if test="countryName != null">country_name = #{countryName},</if>
+            <if test="stateCode != null">state_code = #{stateCode},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStatesById" parameterType="String">
+        update states set deleted = 1 where id = #{id}
+    </delete>
+
+    <delete id="deleteStatesByIds" parameterType="String">
+        update states set deleted = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </delete>
+</mapper>

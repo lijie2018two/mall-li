@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagProductPropValueMapper">
+    
+    <resultMap type="CcairbagProductPropValue" id="CcairbagProductPropValueResult">
+        <result property="valueId"    column="value_id"    />
+        <result property="propValue"    column="prop_value"    />
+        <result property="propId"    column="prop_id"    />
+        <result property="createdBy"    column="created_by"    />
+        <result property="createdTime"    column="created_time"    />
+        <result property="updatedBy"    column="updated_by"    />
+        <result property="updatedTime"    column="updated_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagProductPropValueVo">
+        select value_id, prop_value, prop_id, created_by, created_time, updated_by, updated_time, deleted from ccairbag_product_prop_value
+    </sql>
+
+    <select id="selectCcairbagProductPropValueList" parameterType="CcairbagProductPropValue" resultMap="CcairbagProductPropValueResult">
+        <include refid="selectCcairbagProductPropValueVo"/>
+        <where>
+            deleted = 0
+            <if test="propValue != null  and propValue != ''"> and prop_value = #{propValue}</if>
+            <if test="propId != null "> and prop_id = #{propId}</if>
+            <if test="createdBy != null  and createdBy != ''"> and created_by = #{createdBy}</if>
+            <if test="createdTime != null "> and created_time = #{createdTime}</if>
+            <if test="updatedBy != null  and updatedBy != ''"> and updated_by = #{updatedBy}</if>
+            <if test="updatedTime != null "> and updated_time = #{updatedTime}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagProductPropValueByValueId" parameterType="Long" resultMap="CcairbagProductPropValueResult">
+        <include refid="selectCcairbagProductPropValueVo"/>
+        where deleted = 0 and value_id = #{valueId}
+    </select>
+
+    <insert id="insertCcairbagProductPropValue" parameterType="CcairbagProductPropValue" useGeneratedKeys="true" keyProperty="valueId">
+        insert into ccairbag_product_prop_value
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="propValue != null">prop_value,</if>
+            <if test="propId != null">prop_id,</if>
+            <if test="createdBy != null and createdBy != ''">created_by,</if>
+            <if test="createdTime != null">created_time,</if>
+            <if test="updatedBy != null">updated_by,</if>
+            <if test="updatedTime != null">updated_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="propValue != null">#{propValue},</if>
+            <if test="propId != null">#{propId},</if>
+            <if test="createdBy != null and createdBy != ''">#{createdBy},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+            <if test="updatedBy != null">#{updatedBy},</if>
+            <if test="updatedTime != null">#{updatedTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagProductPropValue" parameterType="CcairbagProductPropValue">
+        update ccairbag_product_prop_value
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="propValue != null">prop_value = #{propValue},</if>
+            <if test="propId != null">prop_id = #{propId},</if>
+            <if test="createdBy != null and createdBy != ''">created_by = #{createdBy},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+            <if test="updatedBy != null">updated_by = #{updatedBy},</if>
+            <if test="updatedTime != null">updated_time = #{updatedTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where value_id = #{valueId}
+    </update>
+
+    <delete id="deleteCcairbagProductPropValueByValueId" parameterType="Long">
+        update ccairbag_product_prop_value set deleted = 1 where value_id = #{valueId}
+    </delete>
+
+    <delete id="deleteCcairbagProductPropValueByValueIds" parameterType="String">
+        update ccairbag_product_prop_value set deleted = 1 where value_id in
+        <foreach item="valueId" collection="array" open="(" separator="," close=")">
+            #{valueId}
+        </foreach>
+
+    </delete>
+</mapper>

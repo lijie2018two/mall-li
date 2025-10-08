@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagProductCarsMapper">
+
+    <resultMap type="CcairbagProductCars" id="CcairbagProductCarsResult">
+        <result property="id"    column="id"    />
+        <result property="make"    column="make"    />
+        <result property="model"    column="model"    />
+        <result property="year"    column="year"    />
+        <result property="productId"    column="product_id"    />
+    </resultMap>
+
+    <sql id="selectCcairbagProductCarsVo">
+        select id, make, model, year, product_id from ccairbag_product_cars
+    </sql>
+
+    <select id="selectCcairbagProductCarsList" parameterType="CcairbagProductCars" resultMap="CcairbagProductCarsResult">
+        <include refid="selectCcairbagProductCarsVo"/>
+        <where>
+
+            <if test="make != null  and make != ''"> and make = #{make}</if>
+            <if test="model != null  and model != ''"> and model = #{model}</if>
+            <if test="year != null  and year != ''"> and year = #{year}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+        </where>
+    </select>
+
+    <select id="selectCcairbagProductCarsById" parameterType="Long" resultMap="CcairbagProductCarsResult">
+        <include refid="selectCcairbagProductCarsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCcairbagProductCars" parameterType="CcairbagProductCars" useGeneratedKeys="true" keyProperty="id">
+        insert into ccairbag_product_cars
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="make != null">make,</if>
+            <if test="model != null">model,</if>
+            <if test="year != null">year,</if>
+            <if test="productId != null">product_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="make != null">#{make},</if>
+            <if test="model != null">#{model},</if>
+            <if test="year != null">#{year},</if>
+            <if test="productId != null">#{productId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCcairbagProductCars" parameterType="CcairbagProductCars">
+        update ccairbag_product_cars
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="make != null">make = #{make},</if>
+            <if test="model != null">model = #{model},</if>
+            <if test="year != null">year = #{year},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCcairbagProductCarsById" parameterType="Long">
+        delete from  ccairbag_product_cars where id = #{id}
+    </delete>
+
+    <delete id="deleteCcairbagProductCarsByProductId" parameterType="Long">
+        delete from  ccairbag_product_cars where product_id = #{productId}
+    </delete>
+
+
+    <delete id="deleteCcairbagProductCarsByIds" parameterType="String">
+        delete from  ccairbag_product_cars where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </delete>
+</mapper>

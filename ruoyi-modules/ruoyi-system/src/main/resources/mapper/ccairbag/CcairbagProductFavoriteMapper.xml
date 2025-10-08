@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagProductFavoriteMapper">
+    
+    <resultMap type="CcairbagProductFavorite" id="CcairbagProductFavoriteResult">
+        <result property="favoriteId"    column="favorite_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="prodId"    column="prod_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagProductFavoriteVo">
+        select favorite_id, user_id, prod_id, create_by, create_time, update_by, update_time, deleted from ccairbag_product_favorite
+    </sql>
+
+    <select id="selectCcairbagProductFavoriteList" parameterType="CcairbagProductFavorite" resultMap="CcairbagProductFavoriteResult">
+        <include refid="selectCcairbagProductFavoriteVo"/>
+        <where>
+            deleted = 0
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="prodId != null "> and prod_id = #{prodId}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagProductFavoriteByFavoriteId" parameterType="Long" resultMap="CcairbagProductFavoriteResult">
+        <include refid="selectCcairbagProductFavoriteVo"/>
+        where deleted = 0 and favorite_id = #{favoriteId}
+    </select>
+
+    <insert id="insertCcairbagProductFavorite" parameterType="CcairbagProductFavorite" useGeneratedKeys="true" keyProperty="favoriteId">
+        insert into ccairbag_product_favorite
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="prodId != null">prod_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="prodId != null">#{prodId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagProductFavorite" parameterType="CcairbagProductFavorite">
+        update ccairbag_product_favorite
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="prodId != null">prod_id = #{prodId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where favorite_id = #{favoriteId}
+    </update>
+
+    <delete id="deleteCcairbagProductFavoriteByFavoriteId" parameterType="Long">
+        update ccairbag_product_favorite set deleted = 1 where favorite_id = #{favoriteId}
+    </delete>
+
+    <delete id="deleteCcairbagProductFavoriteByFavoriteIds" parameterType="String">
+        update ccairbag_product_favorite set deleted = 1 where favorite_id in
+        <foreach item="favoriteId" collection="array" open="(" separator="," close=")">
+            #{favoriteId}
+        </foreach>
+
+    </delete>
+</mapper>

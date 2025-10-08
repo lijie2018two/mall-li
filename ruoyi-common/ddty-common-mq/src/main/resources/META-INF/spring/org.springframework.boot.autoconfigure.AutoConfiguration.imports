@@ -1,0 +1,2 @@
+com.ddty.common.mq.service.MessageSender
+com.ddty.common.mq.configure.MQConfig

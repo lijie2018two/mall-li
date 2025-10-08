@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagWithdrawalMapper">
+
+
+    <resultMap type="CcairbagWithdrawal" id="CcairbagWithdrawalResult">
+        <result property="id"    column="id"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="bankId"    column="bank_id"    />
+        <result property="shopName"    column="shop_name"    />
+        <result property="applyTime"    column="apply_time"    />
+        <result property="drawMoney"    column="draw_money"    />
+        <result property="money"    column="money"    />
+        <result property="bankCardExt"    column="bank_card_ext"    />
+        <result property="bankCard"    column="bank_card"    />
+        <result property="realMoney"    column="real_money"    />
+        <result property="phone"    column="phone"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+        <result property="payType"    column="pay_type"    />
+        <result property="accountNumber"    column="account_number"    />
+    </resultMap>
+
+    <sql id="selectCcairbagWithdrawalVo">
+        select id, shop_id,bank_id, shop_name, apply_time, draw_money,
+               money, bank_card_ext, bank_card, real_money,
+               phone, id_card, status, create_by, create_time,
+               update_by, update_time, deleted from ccairbag_withdrawal
+    </sql>
+
+    <select id="selectCcairbagWithdrawalList" parameterType="CcairbagWithdrawal" resultMap="CcairbagWithdrawalResult">
+        <include refid="selectCcairbagWithdrawalVo"/>
+        <where>
+            deleted = 0
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="bankId != null "> and bank_id = #{bankId}</if>
+
+            <if test="shopName != null  and shopName != ''"> and shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="applyTime != null "> and apply_time = #{applyTime}</if>
+            <if test="drawMoney != null "> and draw_money = #{drawMoney}</if>
+            <if test="money != null "> and money = #{money}</if>
+            <if test="bankCardExt != null  and bankCardExt != ''"> and bank_card_ext = #{bankCardExt}</if>
+            <if test="bankCard != null  and bankCard != ''"> and bank_card = #{bankCard}</if>
+            <if test="realMoney != null "> and real_money = #{realMoney}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="idCard != null  and idCard != ''"> and id_card = #{idCard}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectCcairbagWithdrawalById" parameterType="Long" resultMap="CcairbagWithdrawalResult">
+        <include refid="selectCcairbagWithdrawalVo"/>
+        where deleted = 0 and id = #{id}
+    </select>
+
+    <select id="selectListByShopId" parameterType="Long" resultMap="CcairbagWithdrawalResult">
+        select a.*,b.pay_type,b.account_number from ccairbag_withdrawal a, ccairbag_shop_bank b
+        where a.deleted = 0 and a.shop_id = #{shopId}
+        and a.bank_id = b.id and b.deleted = 0
+        order by a.create_time desc
+    </select>
+
+    <select id="getWithdrawalMoneyByShopId" parameterType="Long" resultType="BigDecimal">
+        select IFNULL(SUM(real_money), 0)  from ccairbag_withdrawal
+        where shop_id= #{shopId}
+        and deleted=0
+        and status = 3
+    </select>
+
+
+    <insert id="insertCcairbagWithdrawal" parameterType="CcairbagWithdrawal">
+        insert into ccairbag_withdrawal
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="shopId != null">shop_id,</if>
+            <if test="bankId != null "> bank_id,</if>
+            <if test="shopName != null">shop_name,</if>
+            <if test="applyTime != null">apply_time,</if>
+            <if test="drawMoney != null">draw_money,</if>
+            <if test="money != null">money,</if>
+            <if test="bankCardExt != null">bank_card_ext,</if>
+            <if test="bankCard != null">bank_card,</if>
+            <if test="realMoney != null">real_money,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="idCard != null and idCard != ''">id_card,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="shopId != null">#{shopId},</if>
+            <if test="bankId != null "> #{bankId},</if>
+
+
+            <if test="shopName != null">#{shopName},</if>
+            <if test="applyTime != null">#{applyTime},</if>
+            <if test="drawMoney != null">#{drawMoney},</if>
+            <if test="money != null">#{money},</if>
+            <if test="bankCardExt != null">#{bankCardExt},</if>
+            <if test="bankCard != null">#{bankCard},</if>
+            <if test="realMoney != null">#{realMoney},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="idCard != null and idCard != ''">#{idCard},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCcairbagWithdrawal" parameterType="CcairbagWithdrawal">
+        update ccairbag_withdrawal
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopId != null">shop_id = #{shopId},</if>
+            <if test="bankId != null ">  bank_id = #{bankId},</if>
+
+            <if test="shopName != null">shop_name = #{shopName},</if>
+            <if test="applyTime != null">apply_time = #{applyTime},</if>
+            <if test="drawMoney != null">draw_money = #{drawMoney},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="bankCardExt != null">bank_card_ext = #{bankCardExt},</if>
+            <if test="bankCard != null">bank_card = #{bankCard},</if>
+            <if test="realMoney != null">real_money = #{realMoney},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="idCard != null and idCard != ''">id_card = #{idCard},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCcairbagWithdrawalById" parameterType="Long">
+        update ccairbag_withdrawal set deleted = 1 where id = #{id}
+    </delete>
+
+    <delete id="deleteCcairbagWithdrawalByIds" parameterType="String">
+        update ccairbag_withdrawal set deleted = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </delete>
+</mapper>

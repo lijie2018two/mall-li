@@ -1,0 +1,62 @@
+package com.ruoyi.system.service;
+
+import com.ruoyi.system.api.domain.ccairbag.CcairbagUserAddr;
+
+import java.util.List;
+
+/**
+ * 用户地址管理Service接口
+ * 
+ * @author lidabai
+ * @date 2025-02-20
+ */
+public interface ICcairbagUserAddrService 
+{
+    /**
+     * 查询用户地址管理
+     * 
+     * @param addrId 用户地址管理主键
+     * @return 用户地址管理
+     */
+    public CcairbagUserAddr selectCcairbagUserAddrByAddrId(Long addrId);
+
+    /**
+     * 查询用户地址管理列表
+     * 
+     * @param ccairbagUserAddr 用户地址管理
+     * @return 用户地址管理集合
+     */
+    public List<CcairbagUserAddr> selectCcairbagUserAddrList(CcairbagUserAddr ccairbagUserAddr);
+
+    /**
+     * 新增用户地址管理
+     * 
+     * @param ccairbagUserAddr 用户地址管理
+     * @return 结果
+     */
+    public int insertCcairbagUserAddr(CcairbagUserAddr ccairbagUserAddr);
+
+    /**
+     * 修改用户地址管理
+     * 
+     * @param ccairbagUserAddr 用户地址管理
+     * @return 结果
+     */
+    public int updateCcairbagUserAddr(CcairbagUserAddr ccairbagUserAddr);
+
+    /**
+     * 批量删除用户地址管理
+     * 
+     * @param addrIds 需要删除的用户地址管理主键集合
+     * @return 结果
+     */
+    public int deleteCcairbagUserAddrByAddrIds(Long[] addrIds);
+
+    /**
+     * 删除用户地址管理信息
+     * 
+     * @param addrId 用户地址管理主键
+     * @return 结果
+     */
+    public int deleteCcairbagUserAddrByAddrId(Long addrId);
+}

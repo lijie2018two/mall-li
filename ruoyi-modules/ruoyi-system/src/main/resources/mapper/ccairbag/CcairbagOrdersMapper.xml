@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagOrdersMapper">
+
+    <resultMap type="CcairbagOrders" id="CcairbagOrdersResult">
+        <result property="orderId"    column="order_id"    />
+        <result property="userId"    column="user_id"    />
+
+        <result property="userName"    column="user_name"    />
+
+        <result property="totalAmount"    column="total_amount"    />
+        <result property="reduceAmount"    column="reduce_amount"    />
+        <result property="finalAmount"    column="final_amount"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="remarks"    column="remarks"    />
+        <result property="tariff"    column="tariff"    />
+
+        <result property="productNums"    column="product_nums"    />
+        <result property="orderNumber"    column="order_number"    />
+
+
+        <result property="orderTotalId"    column="order_total_id"    />
+        <result property="addrId" column="addr_id" />
+
+        <result property="shopId"    column="shop_id"    />
+        <result property="shopName"    column="shop_name"    />
+        <result property="shopUserId"    column="shop_user_id"    />
+
+        <result property="payTime"    column="pay_time"    />
+        <result property="deleteStatus"    column="delete_status"    />
+        <result property="refundSts"    column="refund_sts"    />
+        <result property="closeType"    column="close_type"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+
+        <result property="scale"    column="scale"    />
+        <result property="dealScale"    column="deal_scale"    />
+        <result property="scaleMoney"    column="scale_money"    />
+        <result property="dealMoney"    column="deal_money"    />
+        <result property="incomeMoney"    column="income_money"    />
+        <result property="commissionSumMoney"    column="commission_sum_money"    />
+
+
+        <result property="userDelete"    column="user_delete"    />
+        <result property="shopDelete"    column="shop_delete"    />
+
+
+    </resultMap>
+
+
+
+    <sql id="selectCcairbagOrdersVo">
+        select order_id, user_id, total_amount, reduce_amount, final_amount,user_delete,shop_delete,
+               order_status,order_total_id,commission_sum_money,
+               order_number,  remarks,shop_id,shop_name,shop_user_id,addr_id,
+               product_nums, pay_time,   delete_status, refund_sts, close_type,
+               scale,deal_scale,scale_money,deal_money,income_money,commission_sum_money,
+               create_by, create_time, update_by, update_time, deleted from ccairbag_orders
+    </sql>
+
+    <select id="selectCcairbagOrdersList" parameterType="CcairbagOrders" resultMap="CcairbagOrdersResult">
+        select a.*,b.user_name  from ccairbag_orders a, ccairbag_users b
+        <where>
+            a.user_id = b.user_id and
+            a.deleted = 0 and a.user_delete = 0
+            <if test="userName != null  and userName != ''"> and b.user_name like concat('%', #{userName}, '%')</if>
+
+            <if test="orderStatus != null and orderStatus!=-1"> and a.order_status = #{orderStatus}</if>
+            <if test="orderNumber != null  and orderNumber != ''"> and a.order_number = #{orderNumber}</if>
+
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectCcairbagOrdersByOrderId" parameterType="Long" resultMap="CcairbagOrdersResult">
+        <include refid="selectCcairbagOrdersVo"/>
+        where deleted = 0 and order_id = #{orderId}
+    </select>
+
+
+
+    <update id="updateCcairbagOrders" parameterType="CcairbagOrders">
+        update ccairbag_orders
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+            <if test="reduceAmount != null">reduce_amount = #{reduceAmount},</if>
+            <if test="finalAmount != null">final_amount = #{finalAmount},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+            <if test="tariff != null">tariff = #{tariff},</if>
+
+            <if test="orderTotalId != null  ">  order_total_id = #{orderTotalId},</if>
+            <if test="orderNumber != null and orderNumber != ''">order_number = #{orderNumber},</if>
+            <if test="productNums != null">product_nums = #{productNums},</if>
+
+            <if test="shopId != null">shop_id = #{shopId},</if>
+            <if test="shopName != null  and shopName != ''">shop_name = #{shopName},</if>
+            <if test="shopUserId != null">shop_user_id = #{shopUserId},</if>
+
+            <if test="userDelete != null">user_delete = #{userDelete},</if>
+            <if test="shopDelete != null ">shop_delete = #{shopDelete},</if>
+
+            <if test="payTime != null">pay_time = #{payTime},</if>
+            <if test="deleteStatus != null">delete_status = #{deleteStatus},</if>
+            <if test="refundSts != null">refund_sts = #{refundSts},</if>
+            <if test="closeType != null">close_type = #{closeType},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+            <if test="addrId != null ">
+                addr_id = #{addrId},
+            </if>
+
+            <if test="scale != null">scale =#{scale},</if>
+            <if test="dealScale != null">deal_scale =#{dealScale},</if>
+            <if test="scaleMoney != null">scale_money =#{scaleMoney},</if>
+            <if test="dealMoney != null">deal_money =#{dealMoney},</if>
+            <if test="incomeMoney != null">income_money = #{incomeMoney},</if>
+            <if test="commissionSumMoney != null">commission_sum_money = #{commissionSumMoney},</if>
+
+
+        </trim>
+        where order_id = #{orderId}
+    </update>
+
+    <delete id="deleteCcairbagOrdersByOrderId" parameterType="Long">
+        update ccairbag_orders set deleted = 1 where order_id = #{orderId}
+    </delete>
+
+    <delete id="deleteCcairbagOrdersByOrderIds" parameterType="String">
+        update ccairbag_orders set deleted = 1 where order_id in
+        <foreach item="orderId" collection="array" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+
+    </delete>
+</mapper>

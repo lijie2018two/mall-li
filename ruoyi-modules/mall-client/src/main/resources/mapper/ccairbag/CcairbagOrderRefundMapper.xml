@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagOrderRefundMapper">
+    
+    <resultMap type="CcairbagOrderRefund" id="CcairbagOrderRefundResult">
+        <result property="refundId"    column="refund_id"    />
+        <result property="shopId"    column="shop_id"    />
+
+        <result property="orderAmount"    column="order_amount"    />
+        <result property="orderItemId"    column="order_item_id"    />
+        <result property="refundSn"    column="refund_sn"    />
+        <result property="outRefundNo"    column="out_refund_no"    />
+        <result property="payType"    column="pay_type"    />
+        <result property="userId"    column="user_id"    />
+        <result property="refundAmount"    column="refund_amount"    />
+        <result property="applyType"    column="apply_type"    />
+        <result property="refundSts"    column="refund_sts"    />
+        <result property="returnMoneySts"    column="return_money_sts"    />
+        <result property="applyTime"    column="apply_time"    />
+        <result property="handelTime"    column="handel_time"    />
+        <result property="refundTime"    column="refund_time"    />
+        <result property="photoFiles"    column="photo_files"    />
+
+        <result property="photoFilesExt"    column="photo_files_ext"    />
+        <result property="buyerMsgExt"    column="buyer_msg_ext"    />
+
+
+
+        <result property="buyerType"    column="buyer_type"    />
+        <result property="buyerValue"    column="buyer_value"    />
+        <result property="refundDvyFlowNum"    column="refund_dvyFlowNum"    />
+
+        <result property="buyerMsg"    column="buyer_msg"    />
+        <result property="sellerMsg"    column="seller_msg"    />
+        <result property="expressName"    column="express_name"    />
+        <result property="expressNo"    column="express_no"    />
+        <result property="shipTime"    column="ship_time"    />
+        <result property="receiveTime"    column="receive_time"    />
+        <result property="receiveMessage"    column="receive_message"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagOrderRefundVo">
+        select refund_id, shop_id, buyer_type,buyer_value,
+               order_amount, order_item_id, refund_sn,photo_files_ext,buyer_msg_ext,
+               out_refund_no, pay_type,  user_id,refund_dvyFlowNum,
+               refund_amount, apply_type, refund_sts, return_money_sts,
+               apply_time, handel_time, refund_time, photo_files,
+               buyer_msg, seller_msg, express_name, express_no,
+               ship_time, receive_time, receive_message, deleted from ccairbag_order_refund
+    </sql>
+
+    <select id="selectCcairbagOrderRefundList" parameterType="CcairbagOrderRefund" resultMap="CcairbagOrderRefundResult">
+        <include refid="selectCcairbagOrderRefundVo"/>
+        <where>
+            deleted = 0
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="refundDvyFlowNum != null  and refundDvyFlowNum != ''"> and refund_dvyFlowNum = #{refundDvyFlowNum}</if>
+
+            <if test="orderAmount != null "> and order_amount = #{orderAmount}</if>
+            <if test="orderItemId != null "> and order_item_id = #{orderItemId}</if>
+            <if test="refundSn != null  and refundSn != ''"> and refund_sn = #{refundSn}</if>
+            <if test="outRefundNo != null  and outRefundNo != ''"> and out_refund_no = #{outRefundNo}</if>
+            <if test="payType != null "> and pay_type = #{payType}</if>
+            <if test="userId != null  and userId != ''"> and user_id = #{userId}</if>
+            <if test="refundAmount != null "> and refund_amount = #{refundAmount}</if>
+            <if test="applyType != null "> and apply_type = #{applyType}</if>
+            <if test="refundSts != null "> and refund_sts = #{refundSts}</if>
+            <if test="returnMoneySts != null "> and return_money_sts = #{returnMoneySts}</if>
+            <if test="applyTime != null "> and apply_time = #{applyTime}</if>
+            <if test="handelTime != null "> and handel_time = #{handelTime}</if>
+            <if test="refundTime != null "> and refund_time = #{refundTime}</if>
+            <if test="photoFiles != null  and photoFiles != ''"> and photo_files = #{photoFiles}</if>
+            <if test="buyerMsg != null  and buyerMsg != ''"> and buyer_msg = #{buyerMsg}</if>
+
+            <if test="buyerType != null and buyerType != ''"> and buyer_type = #{buyerType}</if>
+            <if test="buyerValue != null "> and buyer_value = #{buyerValue}</if>
+
+
+            <if test="sellerMsg != null  and sellerMsg != ''"> and seller_msg = #{sellerMsg}</if>
+            <if test="expressName != null  and expressName != ''"> and express_name like concat('%', #{expressName}, '%')</if>
+            <if test="shipTime != null "> and ship_time = #{shipTime}</if>
+            <if test="receiveTime != null "> and receive_time = #{receiveTime}</if>
+            <if test="receiveMessage != null  and receiveMessage != ''"> and receive_message = #{receiveMessage}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagOrderRefundByRefundId" parameterType="Long" resultMap="CcairbagOrderRefundResult">
+        <include refid="selectCcairbagOrderRefundVo"/>
+        where deleted = 0 and refund_id = #{refundId}
+    </select>
+
+    <select id="selectRefundByOrderItemId" parameterType="Long" resultMap="CcairbagOrderRefundResult">
+        <include refid="selectCcairbagOrderRefundVo"/>
+        where deleted = 0 and order_item_id = #{orderItemId}
+
+    </select>
+
+
+
+
+    <insert id="insertCcairbagOrderRefund" parameterType="CcairbagOrderRefund" useGeneratedKeys="true" keyProperty="refundId">
+        insert into ccairbag_order_refund
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shopId != null">shop_id,</if>
+            <if test="refundDvyFlowNum != null and refundDvyFlowNum != ''">refund_dvyFlowNum,</if>
+
+
+            <if test="orderAmount != null">order_amount,</if>
+            <if test="orderItemId != null">order_item_id,</if>
+            <if test="refundSn != null and refundSn != ''">refund_sn,</if>
+            <if test="outRefundNo != null">out_refund_no,</if>
+            <if test="payType != null">pay_type,</if>
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="refundAmount != null">refund_amount,</if>
+            <if test="applyType != null">apply_type,</if>
+            <if test="refundSts != null">refund_sts,</if>
+            <if test="returnMoneySts != null">return_money_sts,</if>
+            <if test="applyTime != null">apply_time,</if>
+            <if test="handelTime != null">handel_time,</if>
+            <if test="refundTime != null">refund_time,</if>
+
+            <if test="photoFiles != null">photo_files,</if>
+            <if test="buyerMsg != null">buyer_msg,</if>
+            <if test="photoFilesExt != null">photo_files_ext,</if>
+            <if test="buyerMsgExt != null">buyer_msg_ext,</if>
+
+            <if test="sellerMsg != null">seller_msg,</if>
+            <if test="expressName != null">express_name,</if>
+            <if test="expressNo != null">express_no,</if>
+            <if test="shipTime != null">ship_time,</if>
+            <if test="receiveTime != null">receive_time,</if>
+            <if test="receiveMessage != null">receive_message,</if>
+
+            <if test="buyerType != null and buyerType != ''">  buyer_type ,</if>
+            <if test="buyerValue != null "> buyer_value ,</if>
+
+
+
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shopId != null">#{shopId},</if>
+
+            <if test="refundDvyFlowNum != null and refundDvyFlowNum != ''">#{refundDvyFlowNum},</if>
+
+            <if test="orderAmount != null">#{orderAmount},</if>
+            <if test="orderItemId != null">#{orderItemId},</if>
+            <if test="refundSn != null and refundSn != ''">#{refundSn},</if>
+            <if test="outRefundNo != null">#{outRefundNo},</if>
+            <if test="payType != null">#{payType},</if>
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="refundAmount != null">#{refundAmount},</if>
+            <if test="applyType != null">#{applyType},</if>
+            <if test="refundSts != null">#{refundSts},</if>
+            <if test="returnMoneySts != null">#{returnMoneySts},</if>
+            <if test="applyTime != null">#{applyTime},</if>
+            <if test="handelTime != null">#{handelTime},</if>
+            <if test="refundTime != null">#{refundTime},</if>
+            <if test="photoFiles != null">#{photoFiles},</if>
+            <if test="buyerMsg != null">#{buyerMsg},</if>
+            <if test="photoFilesExt != null">#{photoFilesExt},</if>
+            <if test="buyerMsgExt != null">#{buyerMsgExt},</if>
+
+            <if test="sellerMsg != null">#{sellerMsg},</if>
+            <if test="expressName != null">#{expressName},</if>
+            <if test="expressNo != null">#{expressNo},</if>
+            <if test="shipTime != null">#{shipTime},</if>
+            <if test="receiveTime != null">#{receiveTime},</if>
+            <if test="receiveMessage != null">#{receiveMessage},</if>
+
+            <if test="buyerType != null and buyerType != ''">  #{buyerType},</if>
+            <if test="buyerValue != null ">  #{buyerValue},</if>
+
+
+
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagOrderRefund" parameterType="CcairbagOrderRefund">
+        update ccairbag_order_refund
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopId != null">shop_id = #{shopId},</if>
+            <if test="refundDvyFlowNum != null and refundDvyFlowNum != ''">refund_dvyFlowNum = #{refundDvyFlowNum},</if>
+
+            <if test="orderAmount != null">order_amount = #{orderAmount},</if>
+            <if test="orderItemId != null">order_item_id = #{orderItemId},</if>
+            <if test="refundSn != null and refundSn != ''">refund_sn = #{refundSn},</if>
+            <if test="outRefundNo != null">out_refund_no = #{outRefundNo},</if>
+            <if test="payType != null">pay_type = #{payType},</if>
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="refundAmount != null">refund_amount = #{refundAmount},</if>
+            <if test="applyType != null">apply_type = #{applyType},</if>
+            <if test="refundSts != null">refund_sts = #{refundSts},</if>
+            <if test="returnMoneySts != null">return_money_sts = #{returnMoneySts},</if>
+            <if test="applyTime != null">apply_time = #{applyTime},</if>
+            <if test="handelTime != null">handel_time = #{handelTime},</if>
+            <if test="refundTime != null">refund_time = #{refundTime},</if>
+            <if test="photoFiles != null">photo_files = #{photoFiles},</if>
+            <if test="buyerMsg != null">buyer_msg = #{buyerMsg},</if>
+            <if test="photoFilesExt != null">photo_files_ext = #{photoFilesExt},</if>
+            <if test="buyerMsgExt != null">buyer_msg_ext = #{buyerMsgExt},</if>
+            <if test="sellerMsg != null">seller_msg = #{sellerMsg},</if>
+            <if test="expressName != null">express_name = #{expressName},</if>
+            <if test="expressNo != null">express_no = #{expressNo},</if>
+            <if test="shipTime != null">ship_time = #{shipTime},</if>
+            <if test="receiveTime != null">receive_time = #{receiveTime},</if>
+            <if test="receiveMessage != null">receive_message = #{receiveMessage},</if>
+
+            <if test="buyerType != null and buyerType != ''">  buyer_type = #{buyerType},</if>
+            <if test="buyerValue != null ">  buyer_value = #{buyerValue},</if>
+
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where refund_id = #{refundId}
+    </update>
+
+    <delete id="deleteCcairbagOrderRefundByRefundId" parameterType="Long">
+        update ccairbag_order_refund set deleted = 1 where refund_id = #{refundId}
+    </delete>
+
+    <delete id="deleteCcairbagOrderRefundByRefundIds" parameterType="String">
+        update ccairbag_order_refund set deleted = 1 where refund_id in
+        <foreach item="refundId" collection="array" open="(" separator="," close=")">
+            #{refundId}
+        </foreach>
+
+    </delete>
+</mapper>

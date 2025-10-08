@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagProductsMapper">
+
+    <resultMap type="CcairbagProducts" id="CcairbagProductsResult">
+        <result property="productId"    column="product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="shopName"    column="shop_name"    />
+        <result property="returnPolicy"    column="return_policy"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="fullCategoryName"    column="full_category_name"    />
+        <result property="conditionType"    column="condition_type"    />
+        <result property="description"    column="description"    />
+        <result property="status"    column="status"    />
+        <result property="applicationReason"    column="application_reason"    />
+        <result property="deliveryFeeMode"    column="delivery_fee_mode"    />
+
+
+        <result property="discount"    column="discount"    />
+
+        <result property="oriPrice"    column="ori_price"    />
+        <result property="price"    column="price"    />
+        <result property="pic"    column="pic"    />
+        <result property="imgs"    column="imgs"    />
+        <result property="totalQuantity"    column="total_quantity"    />
+        <result property="salesVolume"    column="sales_volume"    />
+        <result property="addrId"    column="addr_id"    />
+
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="version"    column="version"    />
+        <result property="showProductId" column="productId"/>
+        <result property="deleted"    column="deleted"    />
+
+        <result property="isNegotiable" column="is_negotiable"/>
+        <result property="minPriceNegotiable"    column="min_price_negotiable"    />
+
+
+        <result property="videos" column="videos"/>
+
+    </resultMap>
+
+    <sql id="selectCcairbagProductsVo">
+        select product_id, product_name, shop_id, return_policy,application_reason,delivery_fee_mode,is_negotiable,min_price_negotiable
+               category_id, description, status,discount, ori_price, price, pic,condition_type,addr_id,videos,
+               imgs, total_quantity, sales_volume, create_by, create_time, update_by, update_time,version,  deleted from ccairbag_products
+    </sql>
+
+    <select id="selectCcairbagProductsList" parameterType="CcairbagProducts" resultMap="CcairbagProductsResult">
+        select a.*,b.shop_name,c.full_category_name
+        from ccairbag_products a,ccairbag_shops b,ccairbag_category c
+        <where>
+            a.shop_id = b.shop_id
+            and c.category_id = a.category_id and a.deleted = 0 and a.status = 0
+            <if test="productName != null and productName != ''">
+                <!-- 拆分查询词为关键词数组 -->
+                <foreach collection="productName.split(' ')" item="keyword" separator="AND" open="AND (">
+                    <!-- 过滤空关键词（处理连续空格的情况） -->
+                    <if test="keyword != null and keyword != ''">
+                        a.product_name LIKE CONCAT('%', #{keyword}, '%')
+                    </if>
+                </foreach>
+                )
+            </if>
+            <if test="shopId != null "> and a.shop_id = #{shopId}</if>
+            <if test="returnPolicy != null  "> and a.return_policy = #{returnPolicy}</if>
+            <if test="description != null  and description != ''"> and a.description = #{description}</if>
+            <if test="conditionType != null "> and a.condition_type = #{conditionType}</if>
+            <if test="categoryId != null "> and a.category_id = #{categoryId}</if>
+            <if test="deliveryFeeMode != null">and a.delivery_fee_mode = #{deliveryFeeMode},</if>
+            <if test="discount != null">and a.discount = #{discount},</if>
+
+
+            <if test="oriPrice != null "> and a.ori_price = #{oriPrice}</if>
+            <if test="price != null "> and a.price = #{price}</if>
+            <if test="pic != null  and pic != ''"> and a.pic = #{pic}</if>
+            <if test="imgs != null  and imgs != ''"> and a.imgs = #{imgs}</if>
+            <if test="totalQuantity != null "> and a.total_quantity = #{totalQuantity}</if>
+            <if test="salesVolume != null "> and a.sales_volume = #{salesVolume}</if>
+            <if test="version != null "> and a.version = #{version}</if>
+        </where>
+    </select>
+
+    <select id="selectCcairbagProductsByProductId" parameterType="Long" resultMap="CcairbagProductsResult">
+        select a.*,b.shop_name,c.full_category_name
+        from ccairbag_products a,
+             ccairbag_shops b,
+             ccairbag_category c
+        where
+            a.shop_id = b.shop_id
+          and c.category_id = a.category_id
+          and a.deleted = 0
+          and a.product_id = #{productId}
+
+    </select>
+
+    <select id="selectCcairbagProductsByProductIdExt" parameterType="Long" resultMap="CcairbagProductsResult">
+        select a.*,b.shop_name,c.full_category_name
+        from ccairbag_products a,
+             ccairbag_shops b,
+             ccairbag_category c
+        where
+            a.shop_id = b.shop_id
+          and c.category_id = a.category_id
+          and a.deleted = 0
+          and a.status  = 0
+          and a.product_id = #{productId}
+    </select>
+
+
+    <select id="findRandomByCategoryId"  resultMap="CcairbagProductsResult">
+        SELECT *
+        FROM ccairbag_products
+        WHERE category_id = #{categoryId}
+          AND deleted = 0
+          and status = 0
+        ORDER BY RAND()
+            LIMIT #{count}
+
+    </select>
+
+    <select id="ishaveProductByAddrId" resultType="Integer">
+        SELECT count(1)
+        FROM ccairbag_products
+        where addr_id = #{addrId}
+        and status = 0
+        and deleted = 0
+    </select>
+
+    <select id="selectCcairbagProductsListByCategoryIds" resultMap="CcairbagProductsResult">
+        SELECT a.*,b.shop_name
+        FROM ccairbag_products a,ccairbag_shops b
+        WHERE a.shop_id = b.shop_id and  a.category_id IN
+        <foreach item="categoryId" index="index" collection="categoryIds" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
+    </select>
+
+    <select id="shopGoodRate" resultType="BigDecimal">
+        SELECT
+            COALESCE(
+                    ROUND(
+                            SUM(CASE WHEN a.evaluate = 0 THEN 1 ELSE 0 END) * 100.0 /
+                            NULLIF(COUNT(a.prod_id), 0),  -- 避免除以 0
+                            2
+                    ),
+                    0
+            ) AS shop_positive_rate_percent
+        FROM
+            ccairbag_shops b
+                LEFT JOIN
+            ccairbag_products c ON b.shop_id = c.shop_id
+                LEFT JOIN
+            ccairbag_product_reviews a ON c.product_id = a.prod_id
+        WHERE
+            b.shop_id = #{shopId}
+        GROUP BY
+            b.shop_id;
+    </select>
+
+    <select id="shopSales" resultType="Integer">
+
+
+        SELECT
+            sum(sales_volume)
+        FROM
+            ccairbag_products
+        WHERE
+            shop_id = #{shopId}
+          AND deleted = 0
+
+    </select>
+
+
+
+
+    <select id="searchProductsExt" resultMap="CcairbagProductsResult">
+        SELECT
+        a.*,
+        b.shop_name,
+        MAX(CASE
+        WHEN car.make LIKE CONCAT('%', 'All Makes', '%') THEN 1
+        ELSE 0
+        END) AS is_all_makes
+        FROM ccairbag_shops b
+        INNER JOIN ccairbag_products a ON a.shop_id = b.shop_id and a.total_quantity>0
+        LEFT JOIN ccairbag_product_cars car ON car.product_id = a.product_id
+        LEFT JOIN (
+        SELECT v.product_id, v.value
+        FROM ccairbag_product_parameter_values v
+        INNER JOIN ccairbag_parameters p ON v.parameter_id = p.parameter_id
+        WHERE v.deleted = 0 AND p.parameter_name = 'Brand' AND p.deleted = 0
+        ) brand ON a.product_id = brand.product_id
+
+
+        <if test="activityId != null">
+            INNER JOIN ccairbag_product_promotion_relations rela ON rela.product_id = a.product_id
+            AND rela.activity_id = #{activityId} AND rela.deleted = 0
+        </if>
+
+        WHERE a.status = 0 AND b.deleted = 0 AND a.deleted = 0
+
+        <!-- 其他过滤条件 -->
+        <if test="categoryIds != null">
+            AND a.category_id IN
+            <foreach item="categoryId" collection="categoryIds" open="(" separator="," close=")">
+                #{categoryId}
+            </foreach>
+        </if>
+
+        <if test="productName != null and productName != ''">
+            <!-- 拆分查询词为关键词数组 -->
+            <foreach collection="productName.split(' ')" item="keyword" separator="AND" open="AND (">
+                <!-- 过滤空关键词（处理连续空格的情况） -->
+                <if test="keyword != null and keyword != ''">
+                    <!-- 判断是否为4位数字（年份），若是则同时匹配product_name和car.year -->
+                    <choose>
+                        <when test="keyword.matches('\\d{4}')">
+                            (a.product_name LIKE CONCAT('%', #{keyword}, '%') OR car.year = #{keyword})
+                        </when>
+                        <otherwise>
+                            a.product_name LIKE CONCAT('%', #{keyword}, '%')
+                        </otherwise>
+                    </choose>
+                </if>
+            </foreach>
+            )
+        </if>
+
+        <if test="brand != null and brand != ''">
+            AND brand.value LIKE CONCAT('%', #{brand}, '%')
+        </if>
+        <if test="shopId != null">
+            AND a.shop_id = #{shopId}
+        </if>
+        <if test="conditionType != null">
+            AND a.condition_type = #{conditionType}
+        </if>
+        <if test="deliveryFeeMode != null">
+            AND a.delivery_fee_mode = #{deliveryFeeMode}
+        </if>
+        <if test="minPrice != null">
+            and a.price &gt;= #{minPrice}
+        </if>
+        <if test="maxPrice != null">
+            and a.price &lt;= #{maxPrice}
+        </if>
+
+        <!-- make条件分支 -->
+        <choose>
+            <when test="make == 'All Makes'">
+                AND car.make LIKE CONCAT('%', 'All Makes', '%')
+            </when>
+            <when test="make != null and make != ''">
+                AND (
+                car.make LIKE CONCAT('%', #{make}, '%')
+                OR car.make LIKE CONCAT('%', 'All Makes', '%')
+                )
+            </when>
+            <otherwise>
+                -- 不添加make条件，查询所有商品
+            </otherwise>
+        </choose>
+
+        GROUP BY a.product_id, b.shop_name
+        ORDER BY is_all_makes ASC
+        <choose>
+            <when test="sortBy == 1">, price ASC</when>
+            <when test="sortBy == 2">, price DESC</when>
+            <when test="sortBy == 3">, sales_volume ASC</when>
+            <when test="sortBy == 4">, sales_volume DESC</when>
+        </choose>
+
+    </select>
+
+
+    <select id="searchProducts" resultMap="CcairbagProductsResult">
+        SELECT a.*,b.shop_name
+        FROM ccairbag_shops b,ccairbag_products a
+            left join (
+                select v.product_id,v.value from ccairbag_product_parameter_values v,ccairbag_parameters p
+                where v.parameter_id=p.parameter_id
+                and v.deleted=0
+                and p.parameter_name='Brand'
+                and p.deleted=0
+            ) brand on a.product_id=brand.product_id
+
+        <if test="make != null and make != ''">
+        ,ccairbag_product_cars car
+        </if>
+
+        <if test="activityId != null ">
+            ,ccairbag_product_promotion_relations rela
+        </if>
+
+        <where>
+            a.shop_id = b.shop_id and a.status =0
+            <if test="make != null and make != ''">
+                and car.product_id = a.product_id  and car.make like concat('%', #{make}, '%')
+            </if>
+
+            <if test="activityId != null ">
+                and rela.product_id = a.product_id  and rela.activity_id = #{activityId}
+                and rela.deleted = 0
+            </if>
+
+            <if test="categoryIds != null">
+                and  a.category_id IN
+                <foreach item="categoryId" index="index" collection="categoryIds" open="(" separator="," close=")">
+                    #{categoryId}
+                </foreach>
+            </if>
+
+
+
+
+            <if test="productName != null and productName != ''">
+                <!-- 拆分查询词为关键词数组 -->
+                <foreach collection="productName.split(' ')" item="keyword" separator="AND" open="AND (">
+                    <!-- 过滤空关键词（处理连续空格的情况） -->
+                    <if test="keyword != null and keyword != ''">
+                        a.product_name LIKE CONCAT('%', #{keyword}, '%')
+                    </if>
+                </foreach>
+                )
+            </if>
+            <if test="brand != null and brand != ''">
+                and brand.value like concat('%', #{brand}, '%')
+            </if>
+            <if test="shopId != null ">
+                and a.shop_id = #{shopId}
+            </if>
+            <if test="conditionType != null ">
+                and a.condition_type = #{conditionType}
+            </if>
+            <if test="deliveryFeeMode != null">
+                and a.delivery_fee_mode = #{deliveryFeeMode}
+            </if>
+            <if test="minPrice != null">
+                and a.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                and a.price &lt;= #{maxPrice}
+            </if>
+
+        </where>
+        GROUP BY a.product_id
+        <choose>
+            <when test="sortBy == 1">
+                ORDER BY a.price ASC
+            </when>
+            <when test="sortBy == 2">
+                ORDER BY a.price DESC
+            </when>
+            <when test="sortBy == 3">
+                ORDER BY a.sales_volume ASC
+            </when>
+            <when test="sortBy == 4">
+                ORDER BY a.sales_volume DESC
+            </when>
+            <otherwise>
+
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <select id="getOffShelveProducts" resultMap="CcairbagProductsResult">
+        select * from ccairbag_products
+        <where>
+            deleted = 0 and shop_id = #{shopId}
+            <if test="status != null and status > 0">
+                and status >0
+            </if>
+            <if test="status != null and status == 0">
+                and status =0
+            </if>
+            <if test="productName != null and productName != ''">
+                and product_name like concat('%', #{productName}, '%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+
+    <insert id="insertCcairbagProducts" parameterType="CcairbagProducts" useGeneratedKeys="true" keyProperty="productId">
+        insert into ccairbag_products
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="shopId != null">shop_id,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="description != null">description,</if>
+            <if test="status != null">status,</if>
+            <if test="applicationReason != null">application_reason,</if>
+            <if test="conditionType != null "> condition_type ,</if>
+            <if test="returnPolicy != null">return_policy,</if>
+            <if test="oriPrice != null">ori_price,</if>
+            <if test="price != null">price,</if>
+            <if test="pic != null">pic,</if>
+            <if test="imgs != null">imgs,</if>
+            <if test="deliveryFeeMode != null">delivery_fee_mode ,</if>
+            <if test="discount != null">discount ,</if>
+
+
+            <if test="addrId != null">addr_id ,</if>
+
+            <if test="totalQuantity != null">total_quantity,</if>
+            <if test="salesVolume != null">sales_volume,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="version != null">version,</if>
+            <if test="deleted != null">deleted,</if>
+
+            <if test="isNegotiable != null">is_negotiable,</if>
+            <if test="minPriceNegotiable != null">min_price_negotiable,</if>
+            <if test="videos != null">videos,</if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="shopId != null">#{shopId},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="description != null">#{description},</if>
+            <if test="status != null">#{status},</if>
+            <if test="applicationReason != null">#{applicationReason},</if>
+            <if test="conditionType != null "> #{conditionType} ,</if>
+            <if test="returnPolicy != null">#{returnPolicy},</if>
+            <if test="oriPrice != null">#{oriPrice},</if>
+            <if test="price != null">#{price},</if>
+            <if test="pic != null">#{pic},</if>
+            <if test="imgs != null">#{imgs},</if>
+            <if test="deliveryFeeMode != null">#{deliveryFeeMode} ,</if>
+            <if test="discount != null">#{discount} ,</if>
+
+            <if test="addrId != null">#{addrId} ,</if>
+
+            <if test="totalQuantity != null">#{totalQuantity},</if>
+            <if test="salesVolume != null">#{salesVolume},</if>
+
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+
+            <if test="isNegotiable != null">#{isNegotiable},</if>
+            <if test="minPriceNegotiable != null">#{minPriceNegotiable},</if>
+            <if test="videos != null">#{videos},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStock" >
+        UPDATE ccairbag_products
+        SET total_quantity = total_quantity - #{num}
+        WHERE product_id = #{productId}
+    </update>
+
+    <update id="updateStockExt" >
+        UPDATE ccairbag_products
+        SET total_quantity = total_quantity + #{num}
+        WHERE product_id = #{productId}
+    </update>
+
+    <update id="updateCcairbagProducts" parameterType="CcairbagProducts">
+        update ccairbag_products
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="shopId != null">shop_id = #{shopId},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="conditionType != null "> condition_type = #{conditionType} ,</if>
+            <if test="oriPrice != null">ori_price = #{oriPrice},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="pic != null">pic = #{pic},</if>
+            <if test="imgs != null">imgs = #{imgs},</if>
+            <if test="applicationReason != null">application_reason = #{applicationReason},</if>
+            <if test="addrId != null">addr_id = #{addrId} ,</if>
+            <if test="discount != null">discount = #{discount} ,</if>
+
+            <if test="totalQuantity != null">total_quantity = #{totalQuantity},</if>
+            <if test="salesVolume != null">sales_volume = #{salesVolume},</if>
+            <if test="deliveryFeeMode != null">delivery_fee_mode = #{deliveryFeeMode},</if>
+            <if test="returnPolicy != null">return_policy = #{returnPolicy},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+
+            <if test="isNegotiable != null">is_negotiable = #{isNegotiable},</if>
+            <if test="minPriceNegotiable != null">min_price_negotiable = #{minPriceNegotiable},</if>
+            <if test="videos != null">videos = #{videos},</if>
+        </trim>
+        where product_id = #{productId}
+    </update>
+
+    <delete id="deleteCcairbagProductsByProductId" parameterType="Long">
+        update ccairbag_products set deleted = 1 where product_id = #{productId}
+    </delete>
+
+    <delete id="deleteCcairbagProductsByProductIds" parameterType="String">
+        update ccairbag_products set deleted = 1 where product_id in
+        <foreach item="productId" collection="array" open="(" separator="," close=")">
+            #{productId}
+        </foreach>
+
+    </delete>
+</mapper>

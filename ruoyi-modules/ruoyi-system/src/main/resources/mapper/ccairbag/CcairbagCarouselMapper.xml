@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagCarouselMapper">
+
+    <resultMap type="CcairbagCarousel" id="CcairbagCarouselResult">
+        <result property="carouselId"    column="carousel_id"    />
+        <result property="imageUrl"    column="image_url"    />
+        <result property="linkUrl"    column="link_url"    />
+        <result property="caption"    column="caption"    />
+        <result property="displayOrder"    column="display_order"    />
+        <result property="status"    column="status"    />
+        <result property="type"    column="type"    />
+        <result property="carouselType"    column="carousel_type"    />
+        <result property="appLinkUrl"    column="app_link_url"    />
+
+
+        <result property="associatedProductId"    column="associated_product_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagCarouselVo">
+        select carousel_id, image_url, link_url,type,carousel_type,app_link_url,
+               caption, display_order, status, associated_product_id,
+               create_by, create_time, update_by, update_time, deleted from ccairbag_carousel
+    </sql>
+
+    <select id="selectCcairbagCarouselList" parameterType="CcairbagCarousel" resultMap="CcairbagCarouselResult">
+        <include refid="selectCcairbagCarouselVo"/>
+        <where>
+            deleted = 0
+            <if test="imageUrl != null  and imageUrl != ''"> and image_url = #{imageUrl}</if>
+            <if test="linkUrl != null  and linkUrl != ''"> and link_url = #{linkUrl}</if>
+            <if test="appLinkUrl != null  and appLinkUrl != ''"> and app_link_url = #{appLinkUrl}</if>
+
+            <if test="caption != null  and caption != ''"> and caption = #{caption}</if>
+            <if test="displayOrder != null "> and display_order = #{displayOrder}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="carouselType != null "> and carousel_type = #{carouselType}</if>
+            <if test="associatedProductId != null "> and associated_product_id = #{associatedProductId}</if>
+        </where>
+        order by create_time
+    </select>
+
+    <select id="selectCcairbagCarouselByCarouselId" parameterType="Long" resultMap="CcairbagCarouselResult">
+        <include refid="selectCcairbagCarouselVo"/>
+        where deleted = 0 and carousel_id = #{carouselId}
+    </select>
+
+    <insert id="insertCcairbagCarousel" parameterType="CcairbagCarousel" useGeneratedKeys="true" keyProperty="carouselId">
+        insert into ccairbag_carousel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="imageUrl != null and imageUrl != ''">image_url,</if>
+            <if test="linkUrl != null">link_url,</if>
+            <if test="appLinkUrl != null">app_link_url,</if>
+
+
+            <if test="caption != null">caption,</if>
+            <if test="displayOrder != null">display_order,</if>
+            <if test="status != null">status,</if>
+            <if test="type != null">type,</if>
+            <if test="carouselType != null">carousel_type,</if>
+            <if test="associatedProductId != null">associated_product_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="imageUrl != null and imageUrl != ''">#{imageUrl},</if>
+            <if test="linkUrl != null">#{linkUrl},</if>
+
+            <if test="appLinkUrl != null">#{appLinkUrl},</if>
+
+            <if test="caption != null">#{caption},</if>
+            <if test="displayOrder != null">#{displayOrder},</if>
+            <if test="status != null">#{status},</if>
+            <if test="type != null">#{type},</if>
+            <if test="carouselType != null">#{carouselType},</if>
+
+
+            <if test="associatedProductId != null">#{associatedProductId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCcairbagCarousel" parameterType="CcairbagCarousel">
+        update ccairbag_carousel
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="imageUrl != null and imageUrl != ''">image_url = #{imageUrl},</if>
+            <if test="linkUrl != null">link_url = #{linkUrl},</if>
+
+            <if test="appLinkUrl != null">app_link_url = #{appLinkUrl},</if>
+
+            <if test="caption != null">caption = #{caption},</if>
+            <if test="displayOrder != null">display_order = #{displayOrder},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="carouselType != null ">  carousel_type = #{carouselType},</if>
+
+            <if test="associatedProductId != null">associated_product_id = #{associatedProductId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where carousel_id = #{carouselId}
+    </update>
+
+    <delete id="deleteCcairbagCarouselByCarouselId" parameterType="Long">
+        update ccairbag_carousel set deleted = 1 where carousel_id = #{carouselId}
+    </delete>
+
+    <delete id="deleteCcairbagCarouselByCarouselIds" parameterType="String">
+        update ccairbag_carousel set deleted = 1 where carousel_id in
+        <foreach item="carouselId" collection="array" open="(" separator="," close=")">
+            #{carouselId}
+        </foreach>
+
+    </delete>
+</mapper>

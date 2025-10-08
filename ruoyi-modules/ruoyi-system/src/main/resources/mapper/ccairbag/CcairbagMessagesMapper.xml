@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagMessagesMapper">
+    
+    <resultMap type="CcairbagMessages" id="CcairbagMessagesResult">
+        <result property="messageId"    column="message_id"    />
+        <result property="conversationsId"    column="conversations_id"    />
+        <result property="senderId"    column="sender_id"    />
+        <result property="messageContent"    column="message_content"    />
+        <result property="isRead"    column="is_read"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagMessagesVo">
+        select message_id, conversations_id, sender_id, message_content, is_read, create_by, create_time, update_by, update_time, deleted from ccairbag_messages
+    </sql>
+
+    <select id="selectCcairbagMessagesList" parameterType="CcairbagMessages" resultMap="CcairbagMessagesResult">
+        <include refid="selectCcairbagMessagesVo"/>
+        <where>
+            deleted = 0
+            <if test="conversationsId != null "> and conversations_id = #{conversationsId}</if>
+            <if test="senderId != null "> and sender_id = #{senderId}</if>
+            <if test="messageContent != null  and messageContent != ''"> and message_content = #{messageContent}</if>
+            <if test="isRead != null "> and is_read = #{isRead}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagMessagesByMessageId" parameterType="Long" resultMap="CcairbagMessagesResult">
+        <include refid="selectCcairbagMessagesVo"/>
+        where deleted = 0 and message_id = #{messageId}
+    </select>
+
+    <insert id="insertCcairbagMessages" parameterType="CcairbagMessages" useGeneratedKeys="true" keyProperty="messageId">
+        insert into ccairbag_messages
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="conversationsId != null">conversations_id,</if>
+            <if test="senderId != null">sender_id,</if>
+            <if test="messageContent != null and messageContent != ''">message_content,</if>
+            <if test="isRead != null">is_read,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="conversationsId != null">#{conversationsId},</if>
+            <if test="senderId != null">#{senderId},</if>
+            <if test="messageContent != null and messageContent != ''">#{messageContent},</if>
+            <if test="isRead != null">#{isRead},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagMessages" parameterType="CcairbagMessages">
+        update ccairbag_messages
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="conversationsId != null">conversations_id = #{conversationsId},</if>
+            <if test="senderId != null">sender_id = #{senderId},</if>
+            <if test="messageContent != null and messageContent != ''">message_content = #{messageContent},</if>
+            <if test="isRead != null">is_read = #{isRead},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where message_id = #{messageId}
+    </update>
+
+    <delete id="deleteCcairbagMessagesByMessageId" parameterType="Long">
+        update ccairbag_messages set deleted = 1 where message_id = #{messageId}
+    </delete>
+
+    <delete id="deleteCcairbagMessagesByMessageIds" parameterType="String">
+        update ccairbag_messages set deleted = 1 where message_id in
+        <foreach item="messageId" collection="array" open="(" separator="," close=")">
+            #{messageId}
+        </foreach>
+
+    </delete>
+</mapper>

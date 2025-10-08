@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagPromotionActivitiesMapper">
+    
+    <resultMap type="CcairbagPromotionActivities" id="CcairbagPromotionActivitiesResult">
+        <result property="activityId"    column="activity_id"    />
+        <result property="activityName"    column="activity_name"    />
+        <result property="activityDescription"    column="activity_description"    />
+        <result property="pic"    column="pic"    />
+        <result property="commissionRate"    column="commission_rate"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+
+
+
+
+
+    <sql id="selectCcairbagPromotionActivitiesVo">
+        select activity_id, activity_name, activity_description, pic, commission_rate, status, create_by, create_time, update_by, update_time, deleted from ccairbag_promotion_activities
+    </sql>
+
+    <select id="selectCcairbagPromotionActivitiesList" parameterType="CcairbagPromotionActivities" resultMap="CcairbagPromotionActivitiesResult">
+        <include refid="selectCcairbagPromotionActivitiesVo"/>
+        <where>
+            deleted = 0
+            <if test="activityName != null  and activityName != ''"> and activity_name like concat('%', #{activityName}, '%')</if>
+            <if test="activityDescription != null  and activityDescription != ''"> and activity_description = #{activityDescription}</if>
+            <if test="pic != null  and pic != ''"> and pic = #{pic}</if>
+            <if test="commissionRate != null "> and commission_rate = #{commissionRate}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+
+
+    <select id="selectCcairbagPromotionActivitiesListByProductId" parameterType="Long" resultMap="CcairbagPromotionActivitiesResult">
+        SELECT
+            c.*
+        FROM
+            ccairbag_product_promotion_relations a,
+            ccairbag_products b,
+            ccairbag_promotion_activities c
+        WHERE
+            a.product_id = #{productId}
+          AND a.product_id = b.product_id
+          AND c.activity_id = a.activity_id
+          AND c.STATUS = 0
+          AND c.deleted = 0
+          AND a.deleted = 0
+          AND b.deleted = 0
+          AND b.STATUS = 0
+    </select>
+
+    
+    <select id="selectCcairbagPromotionActivitiesByActivityId" parameterType="Long" resultMap="CcairbagPromotionActivitiesResult">
+        <include refid="selectCcairbagPromotionActivitiesVo"/>
+        where deleted = 0 and activity_id = #{activityId}
+    </select>
+
+    <insert id="insertCcairbagPromotionActivities" parameterType="CcairbagPromotionActivities">
+        insert into ccairbag_promotion_activities
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="activityId != null">activity_id,</if>
+            <if test="activityName != null">activity_name,</if>
+            <if test="activityDescription != null">activity_description,</if>
+            <if test="pic != null">pic,</if>
+            <if test="commissionRate != null">commission_rate,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="activityId != null">#{activityId},</if>
+            <if test="activityName != null">#{activityName},</if>
+            <if test="activityDescription != null">#{activityDescription},</if>
+            <if test="pic != null">#{pic},</if>
+            <if test="commissionRate != null">#{commissionRate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagPromotionActivities" parameterType="CcairbagPromotionActivities">
+        update ccairbag_promotion_activities
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="activityName != null">activity_name = #{activityName},</if>
+            <if test="activityDescription != null">activity_description = #{activityDescription},</if>
+            <if test="pic != null">pic = #{pic},</if>
+            <if test="commissionRate != null">commission_rate = #{commissionRate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where activity_id = #{activityId}
+    </update>
+
+    <delete id="deleteCcairbagPromotionActivitiesByActivityId" parameterType="Long">
+        update ccairbag_promotion_activities set deleted = 1 where activity_id = #{activityId}
+    </delete>
+
+    <delete id="deleteCcairbagPromotionActivitiesByActivityIds" parameterType="String">
+        update ccairbag_promotion_activities set deleted = 1 where activity_id in
+        <foreach item="activityId" collection="array" open="(" separator="," close=")">
+            #{activityId}
+        </foreach>
+
+    </delete>
+</mapper>

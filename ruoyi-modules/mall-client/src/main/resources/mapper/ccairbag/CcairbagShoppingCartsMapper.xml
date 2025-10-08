@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagShoppingCartsMapper">
+    
+    <resultMap type="CcairbagShoppingCarts" id="CcairbagShoppingCartsResult">
+        <result property="cartId"    column="cart_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="prodId"    column="prod_id"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deliveryFeeMode"    column="delivery_fee_mode"    />
+        <result property="conditionType"    column="condition_type"    />
+        <result property="returnPolicy"    column="return_policy"    />
+
+        <result property="shopName"    column="shop_name"    />
+        <result property="shopLogo"    column="shop_logo"    />
+
+
+        <result property="productName"    column="product_name"    />
+        <result property="pic"    column="pic"    />
+        <result property="price"    column="price"    />
+
+
+    </resultMap>
+
+    <sql id="selectCcairbagShoppingCartsVo">
+        select cart_id, user_id,  prod_id, shop_id, quantity, create_by, create_time, update_by, update_time from ccairbag_shopping_carts
+    </sql>
+
+    <select id="selectCcairbagShoppingCartsList" parameterType="CcairbagShoppingCarts" resultMap="CcairbagShoppingCartsResult">
+        <include refid="selectCcairbagShoppingCartsVo"/>
+        <where>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="prodId != null "> and prod_id = #{prodId}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagShoppingCartsByCartId" parameterType="Long" resultMap="CcairbagShoppingCartsResult">
+        <include refid="selectCcairbagShoppingCartsVo"/>
+        where  cart_id = #{cartId}
+    </select>
+
+
+    <select id="countUserShopByProduct" resultType="java.lang.Integer">
+        select COUNT(1) from  ccairbag_shops
+        where user_id=#{userId} and
+            shop_id = (
+                select shop_id from ccairbag_products where product_id=#{productId}
+            )
+    </select>
+
+
+    <select id="selectShopCars" parameterType="Long" resultMap="CcairbagShoppingCartsResult">
+        select a.*,b.shop_name,c.product_name,c.pic,c.price,b.shop_logo,
+               c.return_policy,c.delivery_fee_mode,c.condition_type
+        from ccairbag_shopping_carts a, ccairbag_shops b,ccairbag_products c
+        where  a.user_id = #{userId}
+        and a.shop_id = b.shop_id and a.prod_id = c.product_id
+        and b.deleted = 0 and b.application_status = 1
+        and c.deleted = 0 and c.status = 0
+    </select>
+
+
+
+    <insert id="insertCcairbagShoppingCarts" parameterType="CcairbagShoppingCarts" useGeneratedKeys="true" keyProperty="cartId">
+        insert into ccairbag_shopping_carts
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="prodId != null">prod_id,</if>
+            <if test="shopId != null">shop_id,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="prodId != null">#{prodId},</if>
+            <if test="shopId != null">#{shopId},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagShoppingCarts" parameterType="CcairbagShoppingCarts">
+        update ccairbag_shopping_carts
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="prodId != null">prod_id = #{prodId},</if>
+            <if test="shopId != null">shop_id = #{shopId},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where cart_id = #{cartId}
+    </update>
+
+    <delete id="deleteCcairbagShoppingCartsByCartId" parameterType="Long">
+        delete from ccairbag_shopping_carts  where   cart_id = #{cartId}
+    </delete>
+
+    <delete id="deleteCcairbagShoppingCartsByCartIds" parameterType="String">
+        delete from ccairbag_shopping_carts where cart_id in
+        <foreach item="cartId" collection="array" open="(" separator="," close=")">
+            #{cartId}
+        </foreach>
+
+    </delete>
+</mapper>

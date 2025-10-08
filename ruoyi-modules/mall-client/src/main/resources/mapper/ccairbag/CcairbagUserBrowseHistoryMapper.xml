@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagUserBrowseHistoryMapper">
+    
+    <resultMap type="CcairbagUserBrowseHistory" id="CcairbagUserBrowseHistoryResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="browseTime"    column="browse_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+
+        <result property="productName"    column="product_name"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="price"    column="price"    />
+        <result property="pic"    column="pic"    />
+        <result property="imgs"    column="imgs"    />
+        <result property="shopName"    column="shop_name"    />
+    </resultMap>
+
+    <sql id="selectCcairbagUserBrowseHistoryVo">
+        select id, user_id, product_id, browse_time, create_time,
+               product_name,shop_id,price,pic,imgs,shop_name,
+               update_time from ccairbag_user_browse_history
+    </sql>
+
+
+
+
+    <insert id="insert" parameterType="CcairbagUserBrowseHistory" useGeneratedKeys="true" keyProperty="id">
+        insert into ccairbag_user_browse_history
+
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="browseTime != null">browse_time,</if>
+            <if test="productName != null   and productName != ''"> product_name,</if>
+            <if test="shopId != null">shop_id,</if>
+            <if test="price != null">price,</if>
+            <if test="pic != null "> pic,</if>
+            <if test="imgs != null">imgs,</if>
+            <if test="shopName != null">shop_name,</if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="browseTime != null">#{browseTime},</if>
+            <if test="productName != null   and productName != ''"> #{productName},</if>
+            <if test="shopId != null">#{shopId},</if>
+            <if test="price != null">#{price},</if>
+            <if test="pic != null "> #{pic},</if>
+            <if test="imgs != null">#{imgs},</if>
+            <if test="shopName != null">#{shopName},</if>
+
+
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="CcairbagUserBrowseHistory">
+        update ccairbag_user_browse_history
+        set browse_time = #{browseTime}
+        where id = #{id}
+    </update>
+
+    <select id="selectByUserIdAndProductId" resultMap="CcairbagUserBrowseHistoryResult">
+        select * from ccairbag_user_browse_history
+        where user_id = #{userId} and product_id = #{productId}
+    </select>
+
+    <select id="selectByUserId" resultMap="CcairbagUserBrowseHistoryResult">
+        SELECT
+        h.user_id, h.product_id, h.shop_id, h.product_name, h.shop_name,
+        h.price, h.pic, h.imgs, h.browse_time
+        FROM ccairbag_user_browse_history h
+        LEFT JOIN ccairbag_products p ON h.product_id = p.product_id
+        WHERE h.user_id = #{userId}
+        AND ( p.status = 0)  <!-- 只查询上架商品 -->
+        ORDER BY h.browse_time DESC
+    </select>
+
+    <select id="countByUserId" resultType="int">
+        select count(*) from ccairbag_user_browse_history
+        where user_id = #{userId}
+    </select>
+
+    <select id="selectThresholdId" resultType="long">
+        select id from ccairbag_user_browse_history
+        where user_id = #{userId}
+        order by browse_time desc
+            limit #{limit}, 1
+    </select>
+
+    <delete id="deleteOldRecords">
+        <![CDATA[
+        delete from ccairbag_user_browse_history
+        where user_id = #{userId}
+        and id < #{thresholdId}
+        ]]>
+    </delete>
+
+    <select id="selectFullInfoByUserIdAndProductId" resultMap="CcairbagUserBrowseHistoryResult">
+        select id, user_id, product_id, product_name, shop_id, shop_name, price, pic, imgs, browse_time
+        from ccairbag_user_browse_history
+        where user_id = #{userId}
+          and product_id = #{productId}
+        order by browse_time desc
+            limit 1
+    </select>
+
+
+    <select id="selectProductStatusByIds" resultType="java.util.HashMap">
+
+        SELECT
+        product_id AS productId,
+        status
+        FROM ccairbag_products
+        WHERE product_id IN
+        <foreach item="item" collection="productIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+
+    </select>
+
+    <delete id="deleteByUserAndProductIds">
+        DELETE FROM ccairbag_user_browse_history
+        WHERE user_id = #{userId}
+        AND product_id IN
+        <foreach item="item" collection="productIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

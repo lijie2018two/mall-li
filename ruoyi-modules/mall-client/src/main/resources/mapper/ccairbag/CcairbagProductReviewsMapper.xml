@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagProductReviewsMapper">
+    
+    <resultMap type="CcairbagProductReviews" id="CcairbagProductReviewsResult">
+        <result property="reviewId"    column="review_id"    />
+        <result property="prodId"    column="prod_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="headimgurl"    column="headimgurl"    />
+        <result property="orderItemId"    column="order_item_id"    />
+        <result property="replyContent"    column="reply_content"    />
+        <result property="comment"    column="comment"    />
+        <result property="recTime"    column="rec_time"    />
+        <result property="replyTime"    column="reply_time"    />
+
+        <result property="totalScore"    column="total_score"    />
+        <result property="accuracyScore"    column="accuracy_score"    />
+        <result property="logisticsScore"    column="logistics_score"    />
+        <result property="communicationScore"    column="communication_score"    />
+
+
+        <result property="isAnonymous"    column="is_anonymous"    />
+        <result property="status"    column="status"    />
+        <result property="evaluate"    column="evaluate"    />
+        <result property="pics"    column="pics"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagProductReviewsVo">
+        select review_id, prod_id, user_id, order_item_id, user_name,headimgurl,
+               reply_content, comment, rec_time, reply_time,
+               total_score,logistics_score,accuracy_score,communication_score, is_anonymous, status, evaluate,
+               pics, create_by, create_time, update_by,
+               update_time, deleted from ccairbag_product_reviews
+    </sql>
+
+    <select id="selectCcairbagProductReviewsList" parameterType="CcairbagProductReviews" resultMap="CcairbagProductReviewsResult">
+        select
+            a.*,b.user_name
+            from ccairbag_product_reviews a,ccairbag_users b
+        <where>
+            a.deleted = 0 and a.user_id = b.user_id and b.deleted = 0
+            <if test="prodId != null "> and a.prod_id = #{prodId}</if>
+            <if test="userId != null "> and a.user_id = #{userId}</if>
+            <if test="orderItemId != null "> and a.order_item_id = #{orderItemId}</if>
+            <if test="replyContent != null  and replyContent != ''"> and a.reply_content = #{replyContent}</if>
+            <if test="comment != null  and comment != ''"> and a.comment = #{comment}</if>
+            <if test="recTime != null "> and a.rec_time = #{recTime}</if>
+            <if test="replyTime != null "> and a.reply_time = #{replyTime}</if>
+            <if test="isAnonymous != null "> and a.is_anonymous = #{isAnonymous}</if>
+            <if test="status != null "> and a.status = #{status}</if>
+            <if test="evaluate != null "> and a.evaluate = #{evaluate}</if>
+            <if test="pics != null  and pics != ''"> and a.pics = #{pics}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagProductReviewsByReviewId" parameterType="Long" resultMap="CcairbagProductReviewsResult">
+        <include refid="selectCcairbagProductReviewsVo"/>
+        where deleted = 0 and review_id = #{reviewId}
+    </select>
+
+    <select id="listByShopId" parameterType="Long"  resultType="com.ruoyi.system.api.domain.ccairbag.dto.CcairbagProductReviewsDTO">
+    SELECT
+        a.review_id reviewId,
+        a.prod_id prodId,
+        a.user_id userId,
+        a.user_name userName,
+        a.headimgurl,
+        a.order_item_id orderItemId,
+        a.reply_content replyContent,
+
+        a.total_score totalScore,
+        a.accuracy_score accuracyScore,
+        a.logistics_score logisticsScore,
+        a.communication_score communicationScore,
+
+
+        a.comment,
+        a.rec_time recTime,
+        a.reply_time replyTime,
+        a.total_score totalScore,
+        a.is_anonymous isAnonymous,
+        a.status,
+        a.evaluate,
+        a.pics,
+        c.shop_name AS shopName,
+        b.product_name AS productName,
+        b.ori_price AS oriPrice,
+        b.price,
+        b.pic,
+        b.imgs
+    FROM
+        ccairbag_product_reviews a
+            LEFT JOIN
+        ccairbag_products b
+        ON
+            a.prod_id = b.product_id
+            LEFT JOIN
+        ccairbag_shops c
+        ON
+            b.shop_id = c.shop_id
+    WHERE
+        a.`status` = 1
+      AND b.shop_id = #{shopId}
+    order by a.rec_time desc
+    </select>
+
+
+    <select id="selectAvgScoreByProductId" parameterType="Long" resultType="java.lang.Double">
+        select avg(total_score) from ccairbag_product_reviews where deleted = 0 and prod_id = #{productId}
+    </select>
+
+    <select id="selectAvgScoreByShopIdExt" parameterType="Long" resultType="Map">
+        select
+            avg(accuracy_score) as avgAccuracyScore,
+            avg(logistics_score) as avglogisticsScore,
+            avg(communication_score) as avgCommunicationScore
+        from ccairbag_product_reviews a,ccairbag_products b
+        where a.deleted = 0 and a.prod_id = b.product_id
+        and b.shop_id = #{shopId}
+    </select>
+
+    <insert id="insertCcairbagProductReviews" parameterType="CcairbagProductReviews" useGeneratedKeys="true" keyProperty="reviewId">
+        insert into ccairbag_product_reviews
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="prodId != null">prod_id,</if>
+
+            <if test="userId != null">user_id,</if>
+            <if test="userName != null  and userName != ''">user_name,</if>
+            <if test="headimgurl != null  and headimgurl != ''">headimgurl,</if>
+
+
+            <if test="orderItemId != null">order_item_id,</if>
+            <if test="replyContent != null">reply_content,</if>
+            <if test="comment != null">comment,</if>
+            <if test="recTime != null">rec_time,</if>
+            <if test="replyTime != null">reply_time,</if>
+            <if test="totalScore != null">total_score,</if>
+            <if test="accuracyScore != null">accuracy_score,</if>
+            <if test="logisticsScore != null">logistics_score,</if>
+            <if test="communicationScore != null">communication_score,</if>
+
+            <if test="isAnonymous != null">is_anonymous,</if>
+            <if test="status != null">status,</if>
+            <if test="evaluate != null">evaluate,</if>
+            <if test="pics != null">pics,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="prodId != null">#{prodId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="userName != null  and userName != ''">#{userName},</if>
+            <if test="headimgurl != null  and headimgurl != ''">#{headimgurl},</if>
+
+            <if test="orderItemId != null">#{orderItemId},</if>
+            <if test="replyContent != null">#{replyContent},</if>
+            <if test="comment != null">#{comment},</if>
+            <if test="recTime != null">#{recTime},</if>
+            <if test="replyTime != null">#{replyTime},</if>
+            <if test="totalScore != null">#{totalScore},</if>
+            <if test="accuracyScore != null">#{accuracyScore},</if>
+            <if test="logisticsScore != null">#{logisticsScore},</if>
+            <if test="communicationScore != null">#{communicationScore},</if>
+
+            <if test="isAnonymous != null">#{isAnonymous},</if>
+            <if test="status != null">#{status},</if>
+            <if test="evaluate != null">#{evaluate},</if>
+            <if test="pics != null">#{pics},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagProductReviews" parameterType="CcairbagProductReviews">
+        update ccairbag_product_reviews
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="prodId != null">prod_id = #{prodId},</if>
+
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="userName != null  and userName != ''">user_name= #{userName},</if>
+            <if test="headimgurl != null  and headimgurl != ''">headimgurl = #{headimgurl},</if>
+
+            <if test="orderItemId != null">order_item_id = #{orderItemId},</if>
+            <if test="replyContent != null">reply_content = #{replyContent},</if>
+            <if test="comment != null">comment = #{comment},</if>
+            <if test="recTime != null">rec_time = #{recTime},</if>
+            <if test="replyTime != null">reply_time = #{replyTime},</if>
+
+            <if test="totalScore != null">total_score = #{totalScore},</if>
+            <if test="accuracyScore != null">accuracy_score = #{accuracyScore},</if>
+            <if test="logisticsScore != null">logistics_score=#{logisticsScore},</if>
+            <if test="communicationScore != null">communication_score=#{communicationScore},</if>
+
+            <if test="isAnonymous != null">is_anonymous = #{isAnonymous},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="evaluate != null">evaluate = #{evaluate},</if>
+            <if test="pics != null">pics = #{pics},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where review_id = #{reviewId}
+    </update>
+
+    <delete id="deleteCcairbagProductReviewsByReviewId" parameterType="Long">
+        update ccairbag_product_reviews set deleted = 1 where review_id = #{reviewId}
+    </delete>
+
+
+    <delete id="deleteCcairbagProductReviewsByReviewIds" parameterType="String">
+        update ccairbag_product_reviews set deleted = 1 where review_id in
+        <foreach item="reviewId" collection="array" open="(" separator="," close=")">
+            #{reviewId}
+        </foreach>
+
+    </delete>
+</mapper>

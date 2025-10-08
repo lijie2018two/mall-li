@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccairbag.api.mapper.CcairbagOrderPaymentMapper">
+    
+    <resultMap type="CcairbagOrderPayment" id="CcairbagOrderPaymentResult">
+        <result property="paymentId"    column="payment_id"    />
+        <result property="payNo"    column="pay_no"    />
+        <result property="bizPayNo"    column="biz_pay_no"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="payType"    column="pay_type"    />
+        <result property="currency"    column="currency"    />
+        <result property="payAmount"    column="pay_amount"    />
+
+        <result property="productNums"    column="product_nums"    />
+        <result property="payerAccount"    column="payer_account"    />
+        <result property="payerName"    column="payer_name"    />
+        <result property="totalFreightAmount"    column="total_freight_amount"    />
+
+        <result property="userId"    column="user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="clearingTime"    column="clearing_time"    />
+        <result property="payStatus"    column="pay_status"    />
+        <result property="deleted"    column="deleted"    />
+
+    </resultMap>
+
+    <sql id="selectCcairbagOrderPaymentVo">
+        select payment_id, pay_no, biz_pay_no, order_id,product_nums,payer_account,
+               pay_type, currency, pay_amount,payer_name,total_freight_amount,
+               user_id, create_time,  pay_status, deleted from ccairbag_order_payment
+    </sql>
+
+    <select id="selectCcairbagOrderPaymentList" parameterType="CcairbagOrderPayment" resultMap="CcairbagOrderPaymentResult">
+        <include refid="selectCcairbagOrderPaymentVo"/>
+        <where>
+            deleted = 0
+            <if test="payNo != null  and payNo != ''"> and pay_no = #{payNo}</if>
+            <if test="bizPayNo != null  and bizPayNo != ''"> and biz_pay_no = #{bizPayNo}</if>
+            <if test="orderId != null  "> and order_id = #{orderId}</if>
+            <if test="payType != null "> and pay_type = #{payType}</if>
+            <if test="currency != null  and currency != ''"> and currency =#{currency}</if>
+
+            <if test="productNums != null  "> and product_nums = #{productNums}</if>
+            <if test="totalFreightAmount != null  "> and total_freight_amount = #{totalFreightAmount}</if>
+            <if test="payerName != null  and payerName != ''"> and payer_name =#{payerName}</if>
+            <if test="payerAccount != null  and payerAccount != ''"> and payer_account =#{payerAccount}</if>
+
+
+            <if test="payAmount != null "> and pay_amount = #{payAmount}</if>
+            <if test="userId != null  and userId != ''"> and user_id = #{userId}</if>
+            <if test="payStatus != null "> and pay_status = #{payStatus}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagOrderPaymentByPaymentId" parameterType="Long" resultMap="CcairbagOrderPaymentResult">
+        <include refid="selectCcairbagOrderPaymentVo"/>
+        where deleted = 0 and payment_id = #{paymentId}
+    </select>
+
+    <select id="selectCcairbagOrderPaymentByOrderId" parameterType="Long" resultMap="CcairbagOrderPaymentResult">
+        select * from ccairbag_order_payment
+        where deleted = 0 and order_id = #{orderId}
+
+            limit 1
+    </select>
+
+
+
+    <insert id="insertCcairbagOrderPayment" parameterType="CcairbagOrderPayment" useGeneratedKeys="true" keyProperty="paymentId">
+        insert into ccairbag_order_payment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="payNo != null">pay_no,</if>
+            <if test="bizPayNo != null">biz_pay_no,</if>
+            <if test="orderId != null">order_id,</if>
+            <if test="payType != null">pay_type,</if>
+            <if test="currency != null">currency,</if>
+            <if test="payAmount != null">pay_amount,</if>
+
+            <if test="productNums != null  ">  product_nums,</if>
+            <if test="totalFreightAmount != null  ">  total_freight_amount ,</if>
+            <if test="payerName != null  and payerName != ''">  payer_name ,</if>
+            <if test="payerAccount != null  and payerAccount != ''">  payer_account ,</if>
+
+
+            <if test="userId != null">user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="payStatus != null">pay_status,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="payNo != null">#{payNo},</if>
+            <if test="bizPayNo != null">#{bizPayNo},</if>
+            <if test="orderId != null">#{orderId},</if>
+            <if test="payType != null">#{payType},</if>
+            <if test="currency != null">#{currency},</if>
+            <if test="payAmount != null">#{payAmount},</if>
+
+            <if test="productNums != null  ">#{productNums},</if>
+            <if test="totalFreightAmount != null  "> #{totalFreightAmount},</if>
+            <if test="payerName != null  and payerName != ''"> #{payerName},</if>
+            <if test="payerAccount != null  and payerAccount != ''"> #{payerAccount},</if>
+
+
+            <if test="userId != null">#{userId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="payStatus != null">#{payStatus},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagOrderPayment" parameterType="CcairbagOrderPayment">
+        update ccairbag_order_payment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="payNo != null">pay_no = #{payNo},</if>
+            <if test="bizPayNo != null">biz_pay_no = #{bizPayNo},</if>
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="payType != null">pay_type = #{payType},</if>
+            <if test="currency != null">currency = #{currency},</if>
+            <if test="payAmount != null">pay_amount = #{payAmount},</if>
+
+            <if test="productNums != null  ">  product_nums = #{productNums},</if>
+            <if test="totalFreightAmount != null  ">  total_freight_amount = #{totalFreightAmount},</if>
+            <if test="payerName != null  and payerName != ''">  payer_name =#{payerName},</if>
+            <if test="payerAccount != null  and payerAccount != ''">  payer_account =#{payerAccount},</if>
+
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="payStatus != null">pay_status = #{payStatus},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where payment_id = #{paymentId}
+    </update>
+
+    <delete id="deleteCcairbagOrderPaymentByPaymentId" parameterType="Long">
+        update ccairbag_order_payment set deleted = 1 where payment_id = #{paymentId}
+    </delete>
+
+    <delete id="deleteCcairbagOrderPaymentByPaymentIds" parameterType="String">
+        update ccairbag_order_payment set deleted = 1 where payment_id in
+        <foreach item="paymentId" collection="array" open="(" separator="," close=")">
+            #{paymentId}
+        </foreach>
+
+    </delete>
+</mapper>

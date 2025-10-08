@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CcairbagConversationsMapper">
+    
+    <resultMap type="CcairbagConversations" id="CcairbagConversationsResult">
+        <result property="conversationId"    column="conversation_id"    />
+        <result property="buyerId"    column="buyer_id"    />
+        <result property="sellerId"    column="seller_id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectCcairbagConversationsVo">
+        select conversation_id, buyer_id, seller_id, order_id, create_by, create_time, update_by, update_time, deleted from ccairbag_conversations
+    </sql>
+
+    <select id="selectCcairbagConversationsList" parameterType="CcairbagConversations" resultMap="CcairbagConversationsResult">
+        <include refid="selectCcairbagConversationsVo"/>
+        <where>
+            deleted = 0
+            <if test="buyerId != null "> and buyer_id = #{buyerId}</if>
+            <if test="sellerId != null "> and seller_id = #{sellerId}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="deleted != null "> and deleted = #{deleted}</if>
+        </where>
+    </select>
+    
+    <select id="selectCcairbagConversationsByConversationId" parameterType="Long" resultMap="CcairbagConversationsResult">
+        <include refid="selectCcairbagConversationsVo"/>
+        where deleted = 0 and conversation_id = #{conversationId}
+    </select>
+
+    <insert id="insertCcairbagConversations" parameterType="CcairbagConversations" useGeneratedKeys="true" keyProperty="conversationId">
+        insert into ccairbag_conversations
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="buyerId != null">buyer_id,</if>
+            <if test="sellerId != null">seller_id,</if>
+            <if test="orderId != null">order_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="buyerId != null">#{buyerId},</if>
+            <if test="sellerId != null">#{sellerId},</if>
+            <if test="orderId != null">#{orderId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCcairbagConversations" parameterType="CcairbagConversations">
+        update ccairbag_conversations
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="buyerId != null">buyer_id = #{buyerId},</if>
+            <if test="sellerId != null">seller_id = #{sellerId},</if>
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where conversation_id = #{conversationId}
+    </update>
+
+    <delete id="deleteCcairbagConversationsByConversationId" parameterType="Long">
+        update ccairbag_conversations set deleted = 1 where conversation_id = #{conversationId}
+    </delete>
+
+    <delete id="deleteCcairbagConversationsByConversationIds" parameterType="String">
+        update ccairbag_conversations set deleted = 1 where conversation_id in
+        <foreach item="conversationId" collection="array" open="(" separator="," close=")">
+            #{conversationId}
+        </foreach>
+
+    </delete>
+</mapper>
