@@ -17,7 +17,7 @@ public class MimeTypeUtils
 
     public static final String IMAGE_GIF = "image/gif";
 
-    public static final String[] IMAGE_EXTENSION = { "bmp", "gif", "jpg", "jpeg", "png" };
+    public static final String[] IMAGE_EXTENSION = { "bmp", "gif", "jpg", "jpeg", "png","apk","docx","doc" };
 
     public static final String[] FLASH_EXTENSION = { "swf", "flv" };
 
