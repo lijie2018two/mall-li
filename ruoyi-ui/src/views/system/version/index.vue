@@ -145,7 +145,7 @@
     </el-dialog>
 
     <!-- 添加或修改App版本信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="formDialog" :model="form" :rules="rules" label-width="80px">
                         <el-form-item label="版本名称" prop="versionName">
                           <el-input v-model="form.versionName" placeholder="请输入版本名称" />
@@ -166,9 +166,7 @@
                         <el-form-item label="更新内容描述">
                           <editor v-model="form.updateContent" :min-height="192"/>
                         </el-form-item>
-                        <el-form-item label="下载次数" prop="downloadCount">
-                          <el-input v-model="form.downloadCount" placeholder="请输入下载次数" />
-                        </el-form-item>
+                       
                         <el-form-item label="状态" prop="status">
                           <el-select v-model="form.status" placeholder="请选择状态">
                             <el-option
