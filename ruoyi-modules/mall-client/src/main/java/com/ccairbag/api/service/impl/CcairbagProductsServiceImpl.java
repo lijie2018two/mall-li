@@ -807,7 +807,7 @@ public class CcairbagProductsServiceImpl implements ICcairbagProductsService
         m.setBody(id);
         //测试3分钟
         messageSender.sendMessageWithDelay(MQProperties.negotiable_EXCHANGE_NAME,
-                MQProperties.negotiable_ROUTE_KEY,m , Long.valueOf(15*1000));
+                MQProperties.negotiable_ROUTE_KEY,m , Long.valueOf(3*24*60*60*1000));
 
     }
 }

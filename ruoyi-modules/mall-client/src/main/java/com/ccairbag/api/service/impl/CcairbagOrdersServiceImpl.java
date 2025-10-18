@@ -1375,7 +1375,7 @@ public class CcairbagOrdersServiceImpl implements ICcairbagOrdersService {
             JsonNode event = objectMapper.readTree(payload);
 //            JSONObject jsonObject = JSON.parseObject(payload);
             log.info("event:{}",event);
-            if ("payment_intent.succeeded".equals(event.path("type").asText())){
+            if ("charge.succeeded".equals(event.path("type").asText())){
                 //支付成功的
                 String status = event.path("data").path("object").path("status").asText();
                 if ("succeeded".equals(status)){
@@ -1394,7 +1394,7 @@ public class CcairbagOrdersServiceImpl implements ICcairbagOrdersService {
                     CcairbagOrdersTotal orders = ccairbagOrdersTotalMapper.queryById(Long.valueOf(localOrderId));
                     String id = event.path("data").path("object").path("id").asText();
                     String value = event.path("data").path("object")
-                            .path("amount_received").asText();
+                            .path("amount").asText();
                     String payTimeString= event.path("created").asText();
                     String currency = event.path("data").path("object")
                             .path("currency").asText();
