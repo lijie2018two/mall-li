@@ -69,7 +69,7 @@ public class CcairbagOrderRefund extends BaseEntity
 
     /** 处理状态:1为待审核,2为同意,3为不同意 */
     @Excel(name = "处理状态:1为 初次待审核,2为 初次同意,3为初次不同意 " +
-            "4 商家取消 5：退货待审核 ；6 退货同意 ，7 退货不同意,8 平台介入中 ,9 平台介入过")
+            "4 商家取消 5：退货待审核 ；6 退货同意 ，7 退货不同意,8 平台介入中 ,9 平台介入过，10退款成功")
     private Integer refundSts;
 
     /** 处理退款状态: 0:退款处理中 1:退款成功 -1:退款失败 */
@@ -140,6 +140,9 @@ public class CcairbagOrderRefund extends BaseEntity
     /** 是否删除 */
     @Excel(name = "是否删除")
     private Integer deleted;
+
+    @ApiParam(name = "介入次数")
+    private Integer jrNum;
 
     @ApiParam(name = "退货物流单号")
     private String refundDvyFlowNum;
