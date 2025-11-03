@@ -1103,7 +1103,7 @@ public class CcairbagOrdersServiceImpl implements ICcairbagOrdersService {
                     // 客户id
 //                    .setCustomer(customerId)
                     // 描述
-                    .setDescription("测试购买商品").build();
+                    .setDescription(total.getOrderNumber()).build();
             paymentIntent = PaymentIntent.create(params);
             System.out.println("stripe卡支付下单返回结果：" + paymentIntent);
             json = JSON.toJSONString(paymentIntent);
@@ -1117,6 +1117,10 @@ public class CcairbagOrdersServiceImpl implements ICcairbagOrdersService {
 
         return new AppResult(json);
     }
+
+
+
+
 
     @Override
     public AppResult generateStripePayoutExt() {
@@ -1569,6 +1573,12 @@ public class CcairbagOrdersServiceImpl implements ICcairbagOrdersService {
                 //发送模版邮件给商家： 显示 卖出的商品名称 数量  提醒发货
 //                emailUtils.send("The merchant has shipped the order","The merchant has shipped the order. Tracking Number: "+dvyFlowNum+", Courier Service:"+logisticsName,users.getEmail());
                 if (oConvertUtils.isNotEmpty(shopUsers.getEmail() )){
+                    log.info("productName-"+ccairbagOrderDetail.getProdName());
+                    log.info("orderNum-"+ccairbagOrderDetail.getOrderNumber());
+                    log.info("productImg-"+ccairbagOrderDetail.getPic());
+                    log.info("money-"+ccairbagOrderDetail.getSubtotal());
+                    log.info("userName-"+users.getUserName());
+                    log.info("shopName-"+orders1.getShopName());
                     Map<String,Object> paramsEmail = new HashMap<>();
                     paramsEmail.put("productName",ccairbagOrderDetail.getProdName());
                     paramsEmail.put("orderNum",ccairbagOrderDetail.getOrderNumber());
@@ -1576,7 +1586,7 @@ public class CcairbagOrdersServiceImpl implements ICcairbagOrdersService {
                     paramsEmail.put("shopName",orders1.getShopName());
                     paramsEmail.put("productImg",ccairbagOrderDetail.getPic());
                     paramsEmail.put("money",ccairbagOrderDetail.getSubtotal());
-                    emailUtils.sendTemplateMail(shopUsers.getEmail(), "Order Item ", "orderEmail.html", params);
+                    emailUtils.sendTemplateMail(shopUsers.getEmail(), "Order Item ", "orderEmail.html", paramsEmail);
 
                 }
 

@@ -199,7 +199,7 @@ public class CcairbagOrderDetailsServiceImpl implements ICcairbagOrderDetailsSer
                 if (refunde.getRefundSts()==3 || refunde.getRefundSts()==7){
                     return AppResult.error("The order request has been rejected, and no further applications can be submitted. For inquiries, please request platform intervention.");
                 }
-
+                refunde.setJrNum(0);
                 refunde.setBuyerType(refundOrderDTO.getBuyerType());
                 refunde.setBuyerValue(refundOrderDTO.getBuyerValue());
                 refunde.setBuyerMsg(refundOrderDTO.getBuyerMsg());
@@ -221,6 +221,7 @@ public class CcairbagOrderDetailsServiceImpl implements ICcairbagOrderDetailsSer
             refund.setRefundAmount(details.getSubtotal());
             refund.setPayType(0);
             refund.setDeleted(0);
+            refund.setJrNum(0);
             refund.setUserId(orders.getUserId());
             refund.setApplyType(refundOrderDTO.getApplyType());
             refund.setRefundSts(1);
@@ -431,11 +432,13 @@ public class CcairbagOrderDetailsServiceImpl implements ICcairbagOrderDetailsSer
         if (refunde.getRefundSts()!=7 && refunde.getRefundSts()!=3){
             return AppResult.error("There is an error in the refund process, and the merchant has not rejected (the refund application).");
         }
+
         details.setOldStatus(details.getOrderStatus());
         details.setOrderStatus(6);
         details.setUpdateTime(new Date());
         ccairbagOrderDetailsMapper.updateCcairbagOrderDetails(details);
         refunde.setRefundSts(8);
+        refunde.setJrNum(refunde.getJrNum()+1);
         refunde.setBuyerMsgExt(refundOrderDTO.getBuyerMsgExt());
         refunde.setPhotoFilesExt(refundOrderDTO.getPhotoFilesExt());
         refunde.setUpdateTime(new Date());
@@ -586,7 +589,7 @@ public class CcairbagOrderDetailsServiceImpl implements ICcairbagOrderDetailsSer
         payFee = payFee.setScale(2, BigDecimal.ROUND_HALF_UP);
         BigDecimal  refundtotal =  details.getSubtotal().add(payFee);
         if (payment.getPayType()==0){
-
+            //paypal
             PayPalApiConfig config = getConfig();
             IJPayHttpResponse captureQueryResponse = PayPalApi.queryOrder(config,payment.getBizPayNo());
             log.info("refund data：" + captureQueryResponse);
@@ -667,16 +670,20 @@ public class CcairbagOrderDetailsServiceImpl implements ICcairbagOrderDetailsSer
 
         }else if (payment.getPayType()==2){
             //visa 退款
-
-            Stripe.apiKey = visapayConfig.getApiKey();
+            Stripe.apiKey = visapayConfig.getStripeApiKey();
             BigDecimal moeny = details.getSubtotal().multiply(new BigDecimal("100"));
 //            refundtotal = details.getSubtotal().add(payFee);
 //                model.setRefundAmount(String.valueOf(refundtotal));
-            RefundCreateParams params = RefundCreateParams.builder().setPaymentIntent(payment.getBizPayNo())
-                    .setAmount(moeny.longValue()).build();
+            RefundCreateParams params =
+                    RefundCreateParams.builder().setCharge(payment.getBizPayNo()).setAmount(moeny.longValue()).build();
+
             try {
                 Refund visaRefund = Refund.create(params);
                 String json = JSON.toJSONString(visaRefund);
+                if ("succeeded".equals(visaRefund.getStatus())){
+                    refundSuccess(details,refund,payment);
+                }
+
                 log.info("visa退款返回结果：" + json);
             } catch (StripeException e) {
                 throw new RuntimeException(e);

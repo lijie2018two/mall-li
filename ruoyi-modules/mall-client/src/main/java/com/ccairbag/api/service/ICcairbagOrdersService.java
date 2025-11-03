@@ -36,6 +36,10 @@ public interface ICcairbagOrdersService
 
     AppResult generateStripePayLink(List<Long> orderIds);
 
+
+
+
+
     AppResult generateStripePayoutExt();
     AppResult generateVisaPay(List<Long> orderIds);
 

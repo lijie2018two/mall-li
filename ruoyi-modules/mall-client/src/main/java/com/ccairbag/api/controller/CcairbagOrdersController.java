@@ -136,6 +136,14 @@ public class CcairbagOrdersController extends BaseController {
         return ccairbagOrdersService.generateStripePayLink(orderIds);
     }
 
+
+
+
+
+
+
+
+
     @ApiOperation("生成stripe转账")
     @PostMapping("/generateStripePayoutExt")
     public AppResult generateStripePayout() {
