@@ -1,23 +1,29 @@
 package com.ruoyi.system.service.impl;
 
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.domain.AlipayTradeRefundModel;
 import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ijpay.core.IJPayHttpResponse;
 import com.ijpay.paypal.PayPalApi;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ijpay.paypal.PayPalApiConfig;
 import com.ijpay.paypal.PayPalApiConfigKit;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.system.api.domain.ccairbag.*;
+import com.ruoyi.system.configs.VisapayConfig;
 import com.ruoyi.system.domain.PayPalConfig;
 import com.ruoyi.system.mapper.*;
 import com.ruoyi.system.service.ICcairbagOrderRefundService;
 import com.ruoyi.system.utils.AlipayUtil;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Refund;
+import com.stripe.param.RefundCreateParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +64,8 @@ public class CcairbagOrderRefundServiceImpl implements ICcairbagOrderRefundServi
     private CcairbagProductsMapper ccairbagProductsMapper;
     @Resource
     private CcairbagShopsMapper ccairbagShopsMapper;
-
+    @Autowired
+    private VisapayConfig visapayConfig;
     @Override
     public List<CcairbagOrderRefund> selectCcairbagOrderRefundList(CcairbagOrderRefund ccairbagOrderRefund)
     {
@@ -74,8 +81,20 @@ public class CcairbagOrderRefundServiceImpl implements ICcairbagOrderRefundServi
         CcairbagOrders orders = ccairbagOrdersMapper.selectCcairbagOrdersByOrderId(details.getOrderId());
         //走第三方退款接口
         CcairbagOrderPayment payment = ccairbagOrderPaymentMapper.selectCcairbagOrderPaymentByOrderId(orders.getOrderTotalId());
-        refundPaypalMoeny(details,refund,payment);
-        return AjaxResult.success("平台介入，已强制退款");
+        if (refund.getJrNum()>1){
+            refundPaypalMoeny(details,refund,payment);
+        }else {
+            //退回状态 不走退款
+            int nowStatus = details.getOrderStatus();
+            details.setOrderStatus(4);
+            details.setOldStatus(nowStatus);
+            ccairbagOrderDetailsMapper.updateCcairbagOrderDetails(details);
+            refund.setRefundSts(2);
+            refund.setRefundTime(new Date());
+            ccairbagOrderRefundMapper.updateCcairbagOrderRefund(refund);
+        }
+
+        return AjaxResult.success("平台介入");
     }
 
     @Override
@@ -197,6 +216,26 @@ public class CcairbagOrderRefundServiceImpl implements ICcairbagOrderRefundServi
                 throw new RuntimeException(e);
             }
 
+        }else if (payment.getPayType()==2){
+            //visa 退款
+            Stripe.apiKey = visapayConfig.getStripeApiKey();
+            BigDecimal moeny = details.getSubtotal().multiply(new BigDecimal("100"));
+//            refundtotal = details.getSubtotal().add(payFee);
+//                model.setRefundAmount(String.valueOf(refundtotal));
+            RefundCreateParams params =
+                    RefundCreateParams.builder().setCharge(payment.getBizPayNo()).setAmount(moeny.longValue()).build();
+
+            try {
+                Refund visaRefund = Refund.create(params);
+                String json = JSON.toJSONString(visaRefund);
+                if ("succeeded".equals(visaRefund.getStatus())){
+                    refundSuccess(details,refund,payment);
+                }
+
+                log.info("visa退款返回结果：" + json);
+            } catch (StripeException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }
@@ -213,7 +252,7 @@ public class CcairbagOrderRefundServiceImpl implements ICcairbagOrderRefundServi
         details.setOrderStatus(10);
         ccairbagOrderDetailsMapper.updateCcairbagOrderDetails(details);
 
-        refund.setRefundSts(9);
+        refund.setRefundSts(10);
         refund.setReturnMoneySts(1);
         refund.setRefundTime(new Date());
         ccairbagOrderRefundMapper.updateCcairbagOrderRefund(refund);

@@ -40,12 +40,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="receiveTime"    column="receive_time"    />
         <result property="receiveMessage"    column="receive_message"    />
         <result property="deleted"    column="deleted"    />
+        <result property="jrNum"    column="jr_num"    />
+
     </resultMap>
 
     <sql id="selectCcairbagOrderRefundVo">
         select refund_id, shop_id, buyer_type,buyer_value,
                order_amount, order_item_id, refund_sn,photo_files_ext,buyer_msg_ext,
-               out_refund_no, pay_type,  user_id,refund_dvyFlowNum,
+               out_refund_no, pay_type,  user_id,refund_dvyFlowNum,jr_num,
                refund_amount, apply_type, refund_sts, return_money_sts,
                apply_time, handel_time, refund_time, photo_files,
                buyer_msg, seller_msg, express_name, express_no,
@@ -107,6 +109,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="shopId != null">shop_id,</if>
             <if test="refundDvyFlowNum != null and refundDvyFlowNum != ''">refund_dvyFlowNum,</if>
+            <if test="jrNum != null">jr_num,</if>
 
 
             <if test="orderAmount != null">order_amount,</if>
@@ -146,6 +149,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="shopId != null">#{shopId},</if>
 
             <if test="refundDvyFlowNum != null and refundDvyFlowNum != ''">#{refundDvyFlowNum},</if>
+            <if test="jrNum != null">#{jrNum},</if>
 
             <if test="orderAmount != null">#{orderAmount},</if>
             <if test="orderItemId != null">#{orderItemId},</if>
@@ -186,6 +190,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="shopId != null">shop_id = #{shopId},</if>
             <if test="refundDvyFlowNum != null and refundDvyFlowNum != ''">refund_dvyFlowNum = #{refundDvyFlowNum},</if>
+            <if test="jrNum != null">jr_num = #{jrNum},</if>
 
             <if test="orderAmount != null">order_amount = #{orderAmount},</if>
             <if test="orderItemId != null">order_item_id = #{orderItemId},</if>
