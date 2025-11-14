@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -68,6 +69,13 @@ public class CcairbagUsersController extends BaseController
     public AppResult editUser(@RequestBody CcairbagUsers ccairbagUsers)
     {
         return ccairbagUsersService.editUser(ccairbagUsers);
+    }
+
+    @ApiOperation(value = "删除用户信息")
+    @PostMapping("/delUser")
+    public AppResult delUser(HttpServletRequest request)
+    {
+        return ccairbagUsersService.delUser(request);
     }
 
     @ApiOperation(value = "添加用户认证信息")

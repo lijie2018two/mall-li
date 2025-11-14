@@ -105,6 +105,7 @@ public class CcairbagOrderDetailsServiceImpl implements ICcairbagOrderDetailsSer
         ccairbagOrderDetails.setLogisticsCode(courierCode);
         ccairbagOrderDetails.setLogisticsName(logisticsName);
         ccairbagOrderDetails.setDvyTime(new Date());
+        ccairbagOrderDetails.setOldStatus(1);
         ccairbagOrderDetails.setOrderStatus(2);
         ccairbagOrderDetailsMapper.updateCcairbagOrderDetails(ccairbagOrderDetails);
         CcairbagOrderDetails details = ccairbagOrderDetailsMapper.selectCcairbagOrderDetailsByDetailId(detailId);

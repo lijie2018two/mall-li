@@ -8,6 +8,8 @@ import com.ruoyi.system.api.domain.ccairbag.CcairbagUsers;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 用户管理Service接口
  * 
@@ -22,6 +24,9 @@ public interface ICcairbagUsersService
     public int updateCcairbagUsers(CcairbagUsers ccairbagUsers);
 
     AppResult editUser(CcairbagUsers ccairbagUsers);
+
+    AppResult delUser(HttpServletRequest request);
+
 
     AppResult<CcairbagUsers> registerUserVerification(CcairbagUserRegistration registration);
 

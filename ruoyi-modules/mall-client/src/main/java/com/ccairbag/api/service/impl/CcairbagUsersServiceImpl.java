@@ -7,6 +7,8 @@ import com.ccairbag.api.mapper.CcairbagUserRegistrationMapper;
 import com.ccairbag.api.mapper.CcairbagUsersMapper;
 import com.ccairbag.api.service.ICcairbagUsersService;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.utils.JwtUtils;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.oConvertUtils;
 import com.ruoyi.common.core.web.domain.AppResult;
 import com.ruoyi.common.redis.service.RedisService;
@@ -16,11 +18,13 @@ import com.ruoyi.system.api.domain.ccairbag.CcairbagUserAddr;
 import com.ruoyi.system.api.domain.ccairbag.CcairbagUserRegistration;
 import com.ruoyi.system.api.domain.ccairbag.CcairbagUsers;
 import com.ruoyi.system.api.model.LoginAppUser;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -141,6 +145,33 @@ public class CcairbagUsersServiceImpl implements ICcairbagUsersService
 //
 //        }
 //        return new AppResult("修改成功1");
+    }
+
+    @Override
+    public AppResult delUser(HttpServletRequest request) {
+        LoginAppUser loginAppUser = SecurityUtils.getLoginAppUser();
+        Long userId = loginAppUser.getCcairbagUsers().getUserId();
+        CcairbagUsers users = ccairbagUsersMapper.selectCcairbagUsersByUserId(userId);
+        if (oConvertUtils.isEmpty(users)){
+            return AppResult.error("User does not exist.");
+        }
+        users.setDeleted(1);
+        users.setUserName(users.getUserName()+"_del");
+        users.setEmail(users.getEmail()+"_del");
+        ccairbagUsersMapper.updateCcairbagUsers(users);
+        String token = SecurityUtils.getAppToken(request);
+
+        //清除缓存
+        if (StringUtils.isNotEmpty(token))
+        {
+            Claims appClaims = JwtUtils.parseAppToken(token);
+            String userkey = JwtUtils.getUserKey(appClaims);
+
+            redisService.deleteObject("app_login_tokens:"+userkey);
+
+
+        }
+        return new AppResult("Deleted successfully.");
     }
 
 

@@ -1204,9 +1204,9 @@ public class CcairbagOrdersServiceImpl implements ICcairbagOrdersService {
             if (ccairbagOrders == null) {
                 throw new RuntimeException("Order does not exist.");
             }
-            if (ccairbagOrders.getOrderStatus() != 0) {
-                throw new RuntimeException("The order is not pending payment.");
-            }
+//            if (ccairbagOrders.getOrderStatus() != 0 || ccairbagOrders.getOrderStatus() ==99) {
+//                throw new RuntimeException("The order is not pending payment.");
+//            }
             if (oConvertUtils.isEmpty(userId)) {
                 userId = ccairbagOrders.getUserId();
             }
@@ -1577,12 +1577,19 @@ public class CcairbagOrdersServiceImpl implements ICcairbagOrdersService {
                     log.info("orderNum-"+ccairbagOrderDetail.getOrderNumber());
                     log.info("productImg-"+ccairbagOrderDetail.getPic());
                     log.info("money-"+ccairbagOrderDetail.getSubtotal());
-                    log.info("userName-"+users.getUserName());
+                    if (oConvertUtils.isNotEmpty(users)){
+                        log.info("userName-"+users.getUserName());
+                    }
+
                     log.info("shopName-"+orders1.getShopName());
                     Map<String,Object> paramsEmail = new HashMap<>();
                     paramsEmail.put("productName",ccairbagOrderDetail.getProdName());
                     paramsEmail.put("orderNum",ccairbagOrderDetail.getOrderNumber());
-                    paramsEmail.put("userName",users.getUserName());
+                    if (oConvertUtils.isNotEmpty(users)){
+                        paramsEmail.put("userName",users.getUserName());
+                    }else {
+                        paramsEmail.put("userName","visitor");
+                    }
                     paramsEmail.put("shopName",orders1.getShopName());
                     paramsEmail.put("productImg",ccairbagOrderDetail.getPic());
                     paramsEmail.put("money",ccairbagOrderDetail.getSubtotal());
@@ -1882,8 +1889,11 @@ public class CcairbagOrdersServiceImpl implements ICcairbagOrdersService {
 //
                 CcairbagOrders orders = ccairbagOrdersMapper.selectCcairbagOrdersByOrderId(details.getOrderId());
                 CcairbagUserAddr addr = ccairbagUserAddrMapper.selectCcairbagUserAddrByAddrId(orders.getAddrId());
-                addrMap.put(prodId, addr);
-                addrList.add(addr);
+                if (oConvertUtils.isNotEmpty(addr)){
+                    addrMap.put(prodId, addr);
+                    addrList.add(addr);
+                }
+
 
             }
         }

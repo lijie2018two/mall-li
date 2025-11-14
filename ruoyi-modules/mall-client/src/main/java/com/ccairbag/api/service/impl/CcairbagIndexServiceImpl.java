@@ -67,7 +67,7 @@ public class CcairbagIndexServiceImpl implements ICcairbagIndexService {
     }
 
     @Override
-    public void test() {
+    public void test(String email) {
         Map<String,Object> params = new HashMap<>();
         params.put("productName","name");
         params.put("orderNum","123");
@@ -75,6 +75,6 @@ public class CcairbagIndexServiceImpl implements ICcairbagIndexService {
         params.put("shopName","gddsss");
         params.put("productImg","https://file.ccairbag.com/9a4dd9ed61ea417db2cf2b7fb297ad45_1758182039030.jpg");
         params.put("money","434");
-        emailUtils.sendTemplateMail("a185134478@gmail.com", "测试邮件", "orderEmail.html", params);
+        emailUtils.sendTemplateMail(email, "测试邮件", "orderEmail.html", params);
     }
 }

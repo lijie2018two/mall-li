@@ -29,9 +29,9 @@ public class CcairbagIndexController {
     }
 
     @GetMapping("/test")
-    public void test()
+    public void test(@ApiParam(value = "邮箱", required = true) String email)
     {
-        ccairbagIndexService.test();
+        ccairbagIndexService.test(email);
 
 
     }
